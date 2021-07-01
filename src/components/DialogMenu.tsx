@@ -79,7 +79,7 @@ const DialogMenu = ({ open, setOpenMenu,tableNumber}: IDialogMenu) => {
     debugger
     socket.emit('setOrderFood', {
       state: "Enviado",
-      idRestaurant: _id,
+      restaurant: _id,
       tableNumber,
       itemsOrder: {
         itemsFood: renderFood, // mesa seleccionada

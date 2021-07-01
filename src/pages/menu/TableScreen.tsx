@@ -52,7 +52,7 @@ const TableScreen = ({ setSelectedTable }: TablesScreen) => {
             </Grid>
 
 
-            <Grid container >
+    
                 {
                     tableList.map((table: any) => {
                         const isSelected = table.selected ? "error" : "primary"
@@ -61,8 +61,6 @@ const TableScreen = ({ setSelectedTable }: TablesScreen) => {
                             isAvailable={isSelected} />
                     })
                 }
-
-            </Grid>
         </Grid>
 
     );
