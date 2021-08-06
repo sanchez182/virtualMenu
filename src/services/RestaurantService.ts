@@ -8,8 +8,8 @@ class RestaurantService {
         return interceptorHttp(this.baseUrl);
       }
 
-      getRestaurantData = async (idRestaurant: string)=>{
-      return  this.getRequest(`${this.endPoint}${idRestaurant}`)
+      getRestaurantData = async ()=>{
+      return  this.getRequest(`${this.endPoint}`)
      //  return  this.getRequest(`${this.endPoint}`)
       }
 

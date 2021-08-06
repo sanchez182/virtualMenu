@@ -10,14 +10,15 @@ import FastfoodIcon from '@material-ui/icons/Fastfood';
 import LocalBarIcon from '@material-ui/icons/LocalBar';
 import MenuItems from './MenuItems';
 import ButtonDial from '../../components/ButtonDial';
-import SelectItem from '../../components/SelectItem';
-import { useSelector } from 'react-redux';
-import { IFoodType, IModelDrinks, IModelFood, ITimeFood } from '../../interfaces/IModelMenuItem';
+import { useDispatch, useSelector } from 'react-redux';
+import { IDrinkType, IFoodType, IModelDrinks, IModelFood, ITimeFood } from '../../interfaces/IModelMenuItem';
 import { Grid } from '@material-ui/core';
-import { drinkTypeList, foodTypeList, timeFoodTypeList } from '../temporalData';
 import MultiSelect from '../../components/MultiSelect';
 import { SocketContext } from '../../context/SocketContext';
 import { Card } from '@material-ui/core';
+import { getAllDrinks } from '../../actionsApi/drinkActions';
+import { setMenuItems } from '../../store/actions/menuItemsActions';
+import { getAllPlates } from '../../actionsApi/plateActions';
 
 //#region  styles
 interface TabPanelProps {
@@ -25,6 +26,7 @@ interface TabPanelProps {
   index: any;
   value: any;
 }
+
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -62,33 +64,48 @@ interface IMenuProps {
 export default function MenuComponent({ selectedTable }: IMenuProps) {
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const { _id } = useSelector((state: RootState) => state.restaurantData);
+  const { foodTimeList, foodTypeList,drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
   const [value, setValue] = React.useState(0);
-  const [drinkType, setDrinkType] = React.useState(null);
+  const [drinkType, setDrinkType] =React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
   const [foodTime, setFoodTime] = React.useState<ITimeFood[]>([]);
   const { socket } = useContext(SocketContext);
 
+  const dispatch = useDispatch()
   useEffect(() => {
-    // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
-    socket.emit('selected-table', {
-      tableNumber: selectedTable, // mesa seleccionada
-      idRestaurant: _id,
-      isSelected: true
-    });
-  }, [socket, selectedTable, _id])
+    async function fetchData() {
+      Promise.all([getAllDrinks(), getAllPlates()]).then(values => {
+        const [drinks, plates] = values
+        items.drink = drinks
+        items.food = plates
+        dispatch(setMenuItems(items))
+      }).catch(error => {
+        debugger;  
+      });
+    }
+    fetchData();
+  }, [dispatch, items])
 
-  const setDrink = (event: any) => {
-    setDrinkType(event.target.value)
+  /*   useEffect(() => {
+      // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
+      socket.emit('selected-table', {
+        tableNumber: selectedTable, // mesa seleccionada
+        idRestaurant: _id,
+        isSelected: true
+      });
+    }, [socket, selectedTable, _id]) */
+
+  const setDrink = (value: any) => {
+    setDrinkType(value as IDrinkType[])
   }
 
-  const setTimeFood = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setFoodTime(event.target.value as ITimeFood[]);
+  const setTimeFood = (value: any) => {
+    setFoodTime(value as ITimeFood[]);
 
   };
 
-  const setFood = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setFoodType(event.target.value as IFoodType[]);
+  const setFood = (value: any) => {
+    setFoodType(value as IFoodType[]);
 
   };
 
@@ -97,107 +114,113 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
   };
 
   const renderFoodByFilters = () => {
+    debugger
     if (foodTime.length > 0 && foodType.length > 0) {
       let newFoodList: IModelFood[] = []
       let newFoodList2: IModelFood[] = []
 
       items.food.forEach(item => {
         foodTime.forEach(time => {
-          if (item.idTimeFood === time.idTimeFood)
+          if (item._id === time.idTimeFood)
             newFoodList.push(item)
         });
       });
 
       newFoodList.forEach(item => {
         foodType.forEach(time => {
-          if (item.idFoodType === time.idFoodType)
+          if (item._id === time.idFoodType)
             newFoodList2.push(item)
         });
       });
 
       return newFoodList2.map((item: IModelFood) => {
-        return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item.id} />
+        return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
       })
 
     } else
       if (foodTime.length > 0) {
         return foodTime.map((foodTime) => {
-          return items.food.filter((x: IModelFood) => x.idTimeFood === foodTime.idTimeFood).map((item: IModelFood) => {
-            return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item.id} />
+          return items.food.filter((x: IModelFood) => x.foodTime === foodTime.timeFoodName).map((item: IModelFood) => {
+            return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
           })
         })
       } else
 
         if (foodType.length > 0) {
           return foodType.map((foodType) => {
-            return items.food.filter((x: IModelFood) => x.idFoodType === foodType.idFoodType).map((item: IModelFood) => {
-              return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item.id} />
+            return items.food.filter((x: IModelFood) => x.foodTime === foodType.foodName).map((item: IModelFood) => {
+              return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
             })
           })
         } else {
           return items.food.map((item: IModelFood) => {
-            return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item.id} />
+            return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
           })
         }
   }
 
   return (
     <>
-      <AppBar position='fixed'>
-        <Tabs centered value={value} onChange={handleChange} aria-label="simple tabs example">
 
+      <AppBar position='fixed'>
+        <Tabs centered style={{width:"100%"}} value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
           <Tab label="Platillos" icon={<LocalDiningIcon />} {...a11yProps(0)} />
           <Tab label="Bebidas" icon={<LocalBarIcon />} {...a11yProps(1)} />
           <Tab label="Ofertas/Combos" icon={<FastfoodIcon />} {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0} >
-        <Grid container justify="flex-end" style={{ marginTop: "48px" }} >
-            <Card  style={{ width: "100%",  marginTop: "14px" }}> 
-                <MultiSelect renderItems={foodTime}
-                  items={timeFoodTypeList}
-                  setItemValue={setTimeFood}
-                  idItemType="idTimeFood"
-                  itemName="timeFoodName"
-                  placeHolder="Filtrar por tiempo de comida" />
+        <Grid container justifyContent="center" style={{ flex: "inline-table" }}>
+          <Grid item xs={12} md={12} style={{ marginTop: "48px" }} >
+            <Card style={{ marginTop: "48px" }}>
+              <MultiSelect renderItems={foodTime}
+                items={foodTimeList}
+                setItemValue={setTimeFood}
+                itemName="foodTimeName"
+                placeHolder="Filtrar por tiempo de comida" />
 
-                <MultiSelect renderItems={foodType}
-                  items={foodTypeList}
-                  setItemValue={setFood}
-                  idItemType="idFoodType"
-                  itemName="foodName"
-                  placeHolder="Filtrar por tipo de comida" /> 
-            </Card> 
+              <MultiSelect renderItems={foodType}
+                items={foodTypeList}
+                setItemValue={setFood}
+                itemName="foodTypeName"
+                placeHolder="Filtrar por tipo de comida" />
+            </Card>
+
+          </Grid>
+          
           {renderFoodByFilters()}
         </Grid>
+
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <Grid container justify="flex-end">
-          <SelectItem idItem={drinkType}
-            items={drinkTypeList}
-            setItemValue={setDrink}
-            idItemType="idDrinkType"
-            itemName="drinkName"
-            placeHolder="Filtrar por tipo de bebida"
-          />
-        </Grid>
-        {
-          !drinkType ? items.drink.map((item: IModelDrinks) => {
-            return <MenuItems item={item} itemType="drink" key={item.id}
+        <Grid container justifyContent="center" style={{ flex: "inline-table" }}>
+          <Grid item xs={12} md={12} style={{ marginTop: "48px" }} >
+          <Card style={{ marginTop: "48px" }}>
+              <MultiSelect renderItems={drinkType}
+                items={drinkTypeList}
+                setItemValue={setDrink}
+                itemName="drinkTypeName"
+                placeHolder="Filtrar por tipo de bebida" /> 
+            </Card>
+          </Grid>  {
+          items.drink.length > 0 && items.drink.map((item: IModelDrinks) => {
+            return <MenuItems item={item} itemType="drink" key={item._id}
               itemName={item.drinkName} />
           })
-            :
-            items.drink.filter((x: IModelDrinks) => x.idDrinkType === drinkType).map((item: IModelDrinks) => {
-              return <MenuItems item={item} itemType="drink" key={item.id}
-                itemName={item.drinkName} />
-            })
+          /*     :
+              items.drink.filter((x: IModelDrinks) => x.idDrinkType === drinkType).map((item: IModelDrinks) => {
+                return <MenuItems item={item} itemType="drink" key={item._id}
+                  itemName={item.drinkName} />
+              }) */
         }
+        </Grid>
+      
       </TabPanel>
       <TabPanel value={value} index={2}>
         Item Three
       </TabPanel>
-      <ButtonDial tableNumber= {selectedTable}/>
+      <ButtonDial tableNumber={selectedTable} />
     </>
   );
 }

@@ -29,40 +29,43 @@ interface MenuItem {
 
 export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
   const classes = useStyles();
+  const quantity = item.cant ? item.cant : 0
   const dispatch = useDispatch();
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
   const addPlate = (cant: number) => {
-    const newValue = cant + item.cant;
-    let indexPlate = items[itemType].findIndex((x: any) => x.id === item.id )
+    const newValue = cant + quantity;
+    let indexPlate = items[itemType].findIndex((x: any) => x._id === item._id )
     items[itemType][indexPlate].cant = newValue;
     newValue >= 0 && dispatch(setMenuItems(items));
   }
 
   const color = item.cant > 0 ? { backgroundColor: "lightgreen", marginTop: "4px" } : { marginTop: "4px" }
+  
   return (
     <div className={classes.root}>
-      <Accordion style={color}>
+      <Accordion style={color} >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
           <Grid container>
-            <Grid item xs={9}>
+            <Grid item xs={12} md={12}>
               <Typography className={classes.heading}>{itemName}
               </Typography>
               <Typography variant="body2" color="textSecondary" >
-                {item.shortDescription}</Typography>
+                { item.description.substring(0,20)}</Typography>
 
             </Grid>
             {item.cant > 0 && <Grid item xs={3}>
-              <span>Cant: {item.cant}</span>
+              <span>Cant: {quantity}</span>
             </Grid>}
 
           </Grid>
         </AccordionSummary>
+
         <AccordionDetails style={{    display: "block"}}>
-          <CardItemMenu addItem={addPlate} cant={item.cant} image={item.image}
+          <CardItemMenu addItem={addPlate} cant={quantity} image={item.urlImage}
            itemName={item[itemName]} description={item.description} />
         </AccordionDetails>
       </Accordion>

@@ -44,13 +44,13 @@ const CardItemMenu =({ addItem, cant,description,itemName,image }: ICardItemMenu
   const classes = useStyles();
 
   return (
-    <Card>
+    <Card style={{width:"100%"}}>
       <CardHeader
         title={itemName}
       />
 
       <CardMedia className={classes.media}
-        image={require( `../../src/assets/img/${image}`).default}
+        image={image}
         title="Paella dish"
       />
       <CardContent>

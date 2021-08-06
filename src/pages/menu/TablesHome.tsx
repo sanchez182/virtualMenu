@@ -12,14 +12,14 @@ const TablesHome: FC = () => {
 
   return (
     <Grid container className={"imgFond"}>
-      {selectedTable ?
+    {/*   {selectedTable ? */}
         <MenuComponent selectedTable={selectedTable} />
         :
         <>
-          <StartAppBarPublic />
-          <TableScreen setSelectedTable={setSelectedTable} />
+ {/*          <StartAppBarPublic />
+          <TableScreen setSelectedTable={setSelectedTable} /> */}
         </>
-      }
+     {/*  } */}
     </Grid>
 
   );

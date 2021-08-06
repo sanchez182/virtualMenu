@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import i18next from 'i18next';
-import store from '../store'; 
+import store from '../store';
 import { setOpenMessageAlert } from '../store/actions/messageAlertActions';
 import { apiCallError, apiCallStart, apiCallSuccess } from '../store/actions/requestActions'; 
 
@@ -21,60 +21,68 @@ export const requestHandler = (request, customHeaders) => {
     return request;
 };
 export const errorHandler = (error) => {
-
     if (isHandlerEnabled(error.response)) {
         // Handle errors  
         switch (error.response?.status.toString()) {
             case '400':
                 //'Bad Request';
-                error.msg = error.response?.data.msg ? error.response?.data.msg : error.response?.data.errors[0]
-                 dispatch(apiCallError());
+                error.msg = Array.isArray(error.response?.data.message)  ? error.response?.data.message[0] : error.response?.data.message
+                dispatch(apiCallError());
                 dispatch(setOpenMessageAlert({ show: true, message: error.msg, severity: 'error' }));
                 break;
             case '401':
                 error.msg = 'Unauthorized';
                 dispatch(apiCallError());
               //  dispatch(checkingFinish());
-               // dispatch(setOpenMessageAlert({ show: true, message: error.msg, severity: 'error' }));
+               dispatch(setOpenMessageAlert({ show: true, message: error.message, severity: 'error' }));
                 break;
             case '404':
                 error.msg = 'Not Found, Record not found for modification';
                 dispatch(apiCallError());
-                dispatch(setOpenMessageAlert({ show: true, message: error.msg, severity: 'warning' }));
+                dispatch(setOpenMessageAlert({ show: true, message: error.message, severity: 'warning' }));
                 break;
             case '500':
                 error.msg = i18next.t('messages.InternalServerError')
                 dispatch(apiCallError());
-               dispatch(setOpenMessageAlert({ show: true, message: error.msg, severity: 'error' }));
+               dispatch(setOpenMessageAlert({ show: true, message: error.message, severity: 'error' }));
                 break;
             default:
                 dispatch(apiCallError());
                 error.msg = i18next.t('messages.InternalServerError.')
-                dispatch(setOpenMessageAlert({ show: true, message: error.msg, severity: 'error' }));
+                dispatch(setOpenMessageAlert({ show: true, message: error.message, severity: 'error' }));
                 break;
         }
     }
-    return Promise.reject({ ...error });
+    return Promise.reject({...error});
 };
 export const successHandler = (response) => {
     dispatch(apiCallSuccess());
     return response;
 };
 
-export const interceptorHttp = (processUrl) => {
+export const interceptorHttp = (processUrl, token) => {
     const content = 'application/json'
     let customHeaders = []
+    if (token) {
+        customHeaders = [
+            {
+                key: 'Authorization',
+                value: `Bearer ${store.getState().auth.token}`, //store.getState().userdata.token
+            }
+        ]
+    }
+
     const axiosInstance = axios.create({
         baseURL: processUrl,
         headers: {
             Accept: 'application/json',
-            'Content-Type': content
+            'Content-Type': content,
         }
     });
     axiosInstance.interceptors.request.use((request) => requestHandler(request, customHeaders));
     axiosInstance.interceptors.response.use(
         response => successHandler(response),
-        error => errorHandler(error)
+        error =>errorHandler(error)
     );
     return axiosInstance;
 };

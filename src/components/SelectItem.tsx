@@ -25,6 +25,19 @@ interface ISelectItem {
   placeHolder: string;
 }
 
+/* drinkDescription: "Gaseosa"
+drinkName: "Cocacola"
+drinkType: "Licor"
+idImg: "restaurant4/twovzgveqcebhotn267u"
+ingredients: []
+price: 100
+showInMenu: false
+updatatedDate: "2021-08-04T21:33:36.312Z"
+urlImage: "https://res.cloudinary.com/ddb12hbdl/image/upload/v1628112816/restaurant4/twovzgveqcebhotn267u.jpg"
+__v: 0
+_id: "610b077de338b8353c6ae14d" */
+
+
 export default function SelectItem({ setItemValue, idItem, items, idItemType, itemName,placeHolder }: ISelectItem) {
   const classes = useStyles();
   return (

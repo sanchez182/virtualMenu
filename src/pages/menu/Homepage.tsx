@@ -12,7 +12,7 @@ const HomePage: FC = () => {
   const { name } = useSelector((state: RootState) => state.restaurantData);
   useEffect(() => {
     //traer la data del restaurante
-    dispatch(getRestaurantData("60cac604d575df447881cbaf")) //este id viene por param en la url principal
+    dispatch(getRestaurantData()) //este id viene por param en la url principal
   }, [dispatch])
    
   return (

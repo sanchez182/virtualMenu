@@ -1,23 +1,5 @@
 import { IDrinkType,IFoodType, ITimeFood } from "../interfaces/IModelMenuItem";
 
-const drink1 : IDrinkType = {
-    idDrinkType: 1,
-    drinkName: "Licor"
-  }
-  
-  const drink2 : IDrinkType = {
-    idDrinkType: 2,
-    drinkName: "Gaseosa"
-  }
-  const drink3 : IDrinkType = {
-    idDrinkType: 3,
-    drinkName: "Natural"
-  }
-  
-  const drink4 : IDrinkType = {
-    idDrinkType: 4,
-    drinkName: "Calientes"
-  }
 
   const food1 : IFoodType = {
     idFoodType: 1,
@@ -58,7 +40,6 @@ const drink1 : IDrinkType = {
     timeFoodName: "Postre"
   }
   
-  export const drinkTypeList : IDrinkType[] = [drink1,drink2,drink3,drink4]; 
   export const foodTypeList : IFoodType[] = [food1,food2,food3,food4]; 
   export const timeFoodTypeList : ITimeFood[] = [timeFood1,timeFood2,timeFood3,timeFood4]; 
  

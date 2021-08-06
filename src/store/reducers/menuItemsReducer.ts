@@ -1,7 +1,7 @@
   
-import { IModelFood, IModelMenuItem,IModelDrinks } from '../../interfaces/IModelMenuItem';
+import { IModelMenuItem } from '../../interfaces/IModelMenuItem';
 import { IMenuItemsActions,SET_MENUITEM,MenuStage} from '../actions/actionsInterfaces/IMenuItemsActions';
-
+/* 
 const model: IModelFood = {
   plateName: "Plato vegano",
   idFoodType: 1,
@@ -69,14 +69,13 @@ const model6: IModelFood = {
   cant: 0,
   id: 6,
   idTimeFood: 1
-}
-
+} */
+/* 
 
 const drink1 : IModelDrinks ={
   drinkName: "Sangría",
   idDrinkType: 1, //licor
-  description: "Descripcion larga de sangría  safasdasdasdasdas",
-  shortDescription: "Descripcion corta de bebida 1",
+  drinkDescription: "Descripcion larga de sangría  safasdasdasdasdas",
   image: "sangria.jpg",
   cant: 0,
   id: 1
@@ -84,9 +83,8 @@ const drink1 : IModelDrinks ={
 const drink2 : IModelDrinks ={
   drinkName: "Gaseosa 2",
   idDrinkType: 2, //Gaseosa
-  description: "Descripcion larga de bebida Gaseosa safasdasdasdasdas",
-  shortDescription: "Descripcion corta de bebida 2",
-  image: "gaseosa.jpg",
+  drinkDescription: "Descripcion larga de bebida Gaseosa safasdasdasdasdas",
+  urlImage: "gaseosa.jpg",
   cant: 0,
   id: 2
 }
@@ -94,9 +92,8 @@ const drink2 : IModelDrinks ={
 const drink3 : IModelDrinks ={
   drinkName: "Bebida natural",
   idDrinkType: 3, //Natural
-  description: "Descripcion larga de bebida natural safasdasdasdasdas",
-  shortDescription: "Descripcion corta de bebida 3",
-  image: "natural.png",
+  drinkDescription: "Descripcion larga de bebida natural safasdasdasdasdas",
+  urlImage: "natural.png",
   cant: 0,
   id: 3
 }
@@ -108,12 +105,12 @@ const drink4 : IModelDrinks ={
   shortDescription: "Descripcion corta de bebida 3",
   image: "Cafe.jpg",
   cant: 0,
-  id: 4
-}
+  id : 4
+}*/
 
  const modelMenu : IModelMenuItem = {
-  food :  [model,model3,model4,model5,model6,model7],
-  drink :  [drink1,drink2,drink3,drink4],
+  food :  [],
+  drink :  [],
  }
 
 
@@ -122,6 +119,7 @@ const initialState: MenuStage ={ items: modelMenu}
 const menuItemsReducer = (state = initialState, action: IMenuItemsActions) => {
   switch(action.type) {
     case SET_MENUITEM:
+      debugger
       return {
         ...state, 
         item: action.payload

@@ -1,22 +1,30 @@
 export interface IModelFood {
-    plateName: string,
-    idFoodType: number,
-    description:string,
-    shortDescription: string,
-    image: string,
-    cant: number,
-    id: number,
-    idTimeFood: number,
+     plateName: string;
+     description: string;
+     idImg: string;
+     urlImage: string;
+     price: number;
+     foodType: string;
+     foodTime: string;
+     showInMenu: boolean;
+     ingredients: [];
+     updatatedDate: Date;
+     cant: number,
+     _id: number
   }
 
   export interface IModelDrinks {
-    drinkName: string,
-    idDrinkType: number,
-    description:string,
-    shortDescription: string,
-    image: string,
+    idDrinkType: number;
+    description: string; 
+    drinkName: string; 
+    idImg: string; 
+    price: number;
+    urlImage: string; 
+    ingredients : [];
+    drinkType: string;
+    showInMenu: boolean
     cant: number,
-    id: number
+    _id: number
   }
 
   export interface IModelMenuItem {
@@ -25,9 +33,22 @@ export interface IModelFood {
   }
 
   export interface IDrinkType {
-    idDrinkType: number;
-    drinkName: String;
+    drinkTypeName: string;
+    isActive: boolean;
+    showInApp: boolean;
   }
+
+/*   export interface IDrinkType {
+    idDrinkType: number;
+    drinkName: String; 
+    idImg: String; 
+    price: number;
+    urlImage: String; 
+    ingredients : [];
+    drinkType: string;
+    showInMenu: boolean
+  }
+ */
   export interface IFoodType {
     idFoodType: number;
     foodName: String;
