@@ -1,7 +1,4 @@
 import DrinkService from "../services/DrinkService"; 
-import store from "../store";
-
-const dispatch = store.dispatch;
 const service = new DrinkService();
 
 export const getAllDrinks = async () => {
