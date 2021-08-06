@@ -1,7 +1,7 @@
 {
   "name": "virtual-menu",
   "version": "0.1.0",
-  "homepage": "https://virtaul-menu.herokuapp.com/MenuApp",
+  "homepage": "https://virtual-menu.herokuapp.com/",
   "private": true,
   "dependencies": {
     "@date-io/moment": "^1.3.13",
