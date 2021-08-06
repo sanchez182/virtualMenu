@@ -18,7 +18,7 @@ export const AppRouter = () => {
 
                 <PublicRoute
                     exact
-                    path="/:id"
+                    path="/"
                     component={Homepage}
                 />
 
