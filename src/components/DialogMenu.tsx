@@ -99,7 +99,7 @@ const DialogMenu = ({ open, setOpenMenu,tableNumber}: IDialogMenu) => {
         {renderFood.length > 0 ? renderFood.map((item: IModelFood) => {
           return <Card>
             <CardHeader
-              title={`${item.plateName}   Cant.${item.cant}`}
+              title={<div>{item.plateName} <p style={{float:"right"}}> Cant.{item.cant}</p></div>}
             />
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">

@@ -50,12 +50,12 @@ export interface IModelFood {
   }
  */
   export interface IFoodType {
-    idFoodType: number;
-    foodName: String;
+    foodTypeName: string;
+    showInApp: boolean;
   }
 
   export interface ITimeFood {
-    idTimeFood: number;
-    timeFoodName: String;
+    foodTimeName: string;
+    showInApp: boolean;
   }
 

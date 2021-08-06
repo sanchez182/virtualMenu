@@ -50,7 +50,7 @@ export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
           id="panel1a-header"
         >
           <Grid container>
-            <Grid item xs={12} md={12}>
+            <Grid item xs={12} md={12} >
               <Typography className={classes.heading}>{itemName}
               </Typography>
               <Typography variant="body2" color="textSecondary" >

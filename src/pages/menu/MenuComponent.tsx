@@ -25,16 +25,18 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: any;
   value: any;
+  className: string;
 }
 
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children,className, value, index, ...other } = props;
 
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
+      className={className}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
@@ -64,9 +66,9 @@ interface IMenuProps {
 export default function MenuComponent({ selectedTable }: IMenuProps) {
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const { foodTimeList, foodTypeList,drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
+  const { foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
   const [value, setValue] = React.useState(0);
-  const [drinkType, setDrinkType] =React.useState<IDrinkType[]>([]);
+  const [drinkType, setDrinkType] = React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
   const [foodTime, setFoodTime] = React.useState<ITimeFood[]>([]);
   const { socket } = useContext(SocketContext);
@@ -80,7 +82,7 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         items.food = plates
         dispatch(setMenuItems(items))
       }).catch(error => {
-        debugger;  
+        debugger;
       });
     }
     fetchData();
@@ -109,49 +111,59 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
 
   };
 
+  const withoutData = () => {
+    return     <Grid item xs={12} md={12} >
+      <Card style={{ marginTop: "48px" }}>
+        <h3> Sin resultados</h3>
+      </Card>
+    </Grid>
+  }
+
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   };
 
   const renderFoodByFilters = () => {
-    debugger
     if (foodTime.length > 0 && foodType.length > 0) {
       let newFoodList: IModelFood[] = []
       let newFoodList2: IModelFood[] = []
 
       items.food.forEach(item => {
         foodTime.forEach(time => {
-          if (item._id === time.idTimeFood)
+          if (item.foodTime === time.foodTimeName)
             newFoodList.push(item)
         });
       });
 
       newFoodList.forEach(item => {
         foodType.forEach(time => {
-          if (item._id === time.idFoodType)
+          if (item.foodType === time.foodTypeName)
             newFoodList2.push(item)
         });
       });
 
-      return newFoodList2.map((item: IModelFood) => {
+      return newFoodList2.length > 0 ? newFoodList2.map((item: IModelFood) => {
         return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
-      })
+      }) : withoutData()
 
     } else
       if (foodTime.length > 0) {
-        return foodTime.map((foodTime) => {
-          return items.food.filter((x: IModelFood) => x.foodTime === foodTime.timeFoodName).map((item: IModelFood) => {
-            return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
+        let data: JSX.Element[] = [];
+        foodTime.forEach((foodTime) => {
+          items.food.filter((x: IModelFood) => x.foodTime === foodTime.foodTimeName).forEach((item: IModelFood) => {
+            data.push(<MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />)
           })
         })
+        return renderItems(data)
       } else
-
         if (foodType.length > 0) {
-          return foodType.map((foodType) => {
-            return items.food.filter((x: IModelFood) => x.foodTime === foodType.foodName).map((item: IModelFood) => {
-              return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
+          let data: JSX.Element[] = [];
+          foodType.forEach((foodType) => {
+            items.food.filter((x: IModelFood) => x.foodType === foodType.foodTypeName).forEach((item: IModelFood) => {
+              data.push(<MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />)
             })
           })
+          return renderItems(data)
         } else {
           return items.food.map((item: IModelFood) => {
             return <MenuItems item={item} itemType="food" itemName={item.plateName} key={item._id} />
@@ -159,19 +171,41 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         }
   }
 
+  const renderDrinksByFilter = () => {
+    if (drinkType.length > 0) {
+      let data: JSX.Element[] = [];
+      drinkType.forEach((drinkType) => {
+        items.drink.filter((x: IModelDrinks) => x.drinkType === drinkType.drinkTypeName).forEach((item: IModelDrinks) => {
+          data.push(<MenuItems item={item} itemType="drink" itemName={item.drinkName} key={item._id} />)
+        })
+      })
+      return renderItems(data)
+    } else {
+      return items.drink.map((item: IModelDrinks) => {
+        return <MenuItems item={item} itemType="drink" itemName={item.drinkName} key={item._id} />
+      })
+    }
+  }
+
+  const renderItems = (data: JSX.Element[]) => {
+    return data.length > 0 ? data.map(item => {
+      return item
+    }) : withoutData()
+  }
+
   return (
     <>
 
       <AppBar position='fixed'>
-        <Tabs centered style={{width:"100%"}} value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
-          <Tab label="Platillos" icon={<LocalDiningIcon />} {...a11yProps(0)} />
+        <Tabs centered     value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
+          <Tab label="Platillos"  icon={<LocalDiningIcon />} {...a11yProps(0)} />
           <Tab label="Bebidas" icon={<LocalBarIcon />} {...a11yProps(1)} />
-          <Tab label="Ofertas/Combos" icon={<FastfoodIcon />} {...a11yProps(2)} />
+          <Tab label="Ofertas/Combos"  icon={<FastfoodIcon />} {...a11yProps(2)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} >
-        <Grid container justifyContent="center" style={{ flex: "inline-table" }}>
-          <Grid item xs={12} md={12} style={{ marginTop: "48px" }} >
+      <TabPanel value={value} index={0} className="tapPanelFullWidth" >
+        <Grid container justifyContent="center" style={{  marginTop: "48px" }}>
+          <Grid item xs={12} md={12} >
             <Card style={{ marginTop: "48px" }}>
               <MultiSelect renderItems={foodTime}
                 items={foodTimeList}
@@ -185,39 +219,28 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
                 itemName="foodTypeName"
                 placeHolder="Filtrar por tipo de comida" />
             </Card>
-
-          </Grid>
+          </Grid>  
           
           {renderFoodByFilters()}
         </Grid>
-
+ 
       </TabPanel>
 
-      <TabPanel value={value} index={1}>
-        <Grid container justifyContent="center" style={{ flex: "inline-table" }}>
-          <Grid item xs={12} md={12} style={{ marginTop: "48px" }} >
-          <Card style={{ marginTop: "48px" }}>
+      <TabPanel value={value} index={1} className="tapPanelFullWidth">
+        <Grid container justifyContent="center" style={{  marginTop: "48px" }}>
+          <Grid item xs={12} md={12}>
+            <Card style={{ marginTop: "48px" }}>
               <MultiSelect renderItems={drinkType}
                 items={drinkTypeList}
                 setItemValue={setDrink}
                 itemName="drinkTypeName"
-                placeHolder="Filtrar por tipo de bebida" /> 
+                placeHolder="Filtrar por tipo de bebida" />
             </Card>
-          </Grid>  {
-          items.drink.length > 0 && items.drink.map((item: IModelDrinks) => {
-            return <MenuItems item={item} itemType="drink" key={item._id}
-              itemName={item.drinkName} />
-          })
-          /*     :
-              items.drink.filter((x: IModelDrinks) => x.idDrinkType === drinkType).map((item: IModelDrinks) => {
-                return <MenuItems item={item} itemType="drink" key={item._id}
-                  itemName={item.drinkName} />
-              }) */
-        }
+          </Grid>  {renderDrinksByFilter()}
         </Grid>
-      
+
       </TabPanel>
-      <TabPanel value={value} index={2}>
+      <TabPanel value={value} index={2} className="tapPanelFullWidth">
         Item Three
       </TabPanel>
       <ButtonDial tableNumber={selectedTable} />
