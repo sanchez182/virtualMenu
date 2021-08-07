@@ -42,7 +42,6 @@ interface ICardItemMenu {
 
 const CardItemMenu =({ addItem, cant,description,itemName,image }: ICardItemMenu) =>{
   const classes = useStyles();
-
   return (
     <Card style={{width:"100%"}}>
       <CardHeader
@@ -50,7 +49,7 @@ const CardItemMenu =({ addItem, cant,description,itemName,image }: ICardItemMenu
       />
 
       <CardMedia className={classes.media}
-        image={image}
+        image={image !== "../../assets/no-Image-Placeholder.png" ? image :  require("../assets/no-Image-Placeholder.png").default}
         title="Paella dish"
       />
       <CardContent>

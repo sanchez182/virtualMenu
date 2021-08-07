@@ -9,7 +9,6 @@ export const useSocket = ( serverPath ) => {
     const { _id } = useSelector((state) => state.restaurantData);
 
     const conectarSocket = useCallback( () => {
-        debugger
         console.log("entra a conectarse una vez mas")
         const socketTemp = io.connect( serverPath, { 
             transports: ['websocket'],
@@ -32,7 +31,7 @@ export const useSocket = ( serverPath ) => {
         setOnline( socket?.connected );
     }, [socket])
 
-    useEffect(() => {debugger
+    useEffect(() => {
         socket?.on('connect', () => setOnline( true ));
     }, [ socket ])
 

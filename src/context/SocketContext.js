@@ -24,7 +24,6 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         socket?.on('table', (mensaje) => {
-            debugger
             console.log("mesa seleccionada" + " " + mensaje)
                     })
     }, [_id, socket ]);

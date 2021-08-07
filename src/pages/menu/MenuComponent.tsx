@@ -82,7 +82,6 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         items.food = plates
         dispatch(setMenuItems(items))
       }).catch(error => {
-        debugger;
       });
     }
     fetchData();
