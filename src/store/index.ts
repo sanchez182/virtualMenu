@@ -7,10 +7,12 @@ import menuItemReducer from './reducers/menuItemsReducer';
 import alertComponentReducer from './reducers/alertComponentReducer';
 import requestReducer from './reducers/requestReducer';
 import restaurantReducer from './reducers/restaurantReducer ';
+import ordersReducer from './reducers/ordersReducer';
 
 const rootReducer = combineReducers({
   lang: langReducer,
   menuItemReducer,
+  orderData: ordersReducer,
   openMessageAlert:alertComponentReducer,
   requestReducer,
   restaurantData: restaurantReducer

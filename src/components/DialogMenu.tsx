@@ -13,6 +13,7 @@ import { RootState } from '../store';
 import { IModelDrinks, IModelFood } from '../interfaces/IModelMenuItem';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
 import { SocketContext } from '../context/SocketContext';
+import { useState } from 'react';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -67,27 +68,51 @@ interface IDialogMenu {
   setOpenMenu: () => void;
   tableNumber: number;
 }
-const DialogMenu = ({ open, setOpenMenu,tableNumber}: IDialogMenu) => {
+const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
   const renderFood = items.food.filter((x: IModelFood) => x.cant > 0)
   const renderDrink = items.drink.filter((x: IModelDrinks) => x.cant > 0)
   const { socket } = useContext(SocketContext);
 
+  const [orderStatus, setOrderStatus] = useState("Sin enviar")
+
   const { _id } = useSelector((state: RootState) => state.restaurantData);
 
   const ordenFood = () => {
     debugger
+    const itemsFood: any[] = []
+    renderFood.forEach(item => {
+      itemsFood.push({
+        plate: item._id,
+        quantity: item.cant
+      })
+    })
+
+    const itemsDrink: any[] = []
+    renderDrink.forEach(item => {
+      itemsDrink.push({
+        drink: item._id,
+        quantity: item.cant
+      })
+    })
+
     socket.emit('set-order-food', {
       state: "Pendiente",
       restaurant: _id,
       tableNumber,
       itemsOrder: {
-        itemsFood: renderFood, // mesa seleccionada
-        itemsDrink: renderDrink
+        itemsFood, // mesa seleccionada
+        itemsDrink
       }
     });
+
   }
 
+  React.useEffect(() => {
+    socket?.on('change-status-order-client', (order: any) => {
+      setOrderStatus(order.state)
+    })
+  }, [_id, socket]);
 
   return (
     <Dialog onClose={setOpenMenu} aria-labelledby="customized-dialog-title" open={open}>
@@ -95,11 +120,13 @@ const DialogMenu = ({ open, setOpenMenu,tableNumber}: IDialogMenu) => {
         Listado de productos seleccionados
       </DialogTitle>
       <DialogContent dividers>
+        <h4>Estado : {orderStatus}</h4>
+
         <h4>Platillos</h4>
         {renderFood.length > 0 ? renderFood.map((item: IModelFood) => {
           return <Card>
             <CardHeader
-              title={<div>{item.plateName} <p style={{float:"right"}}> Cant.{item.cant}</p></div>}
+              title={<div>{item.plateName} <p style={{ float: "right" }}> Cant.{item.cant}</p></div>}
             />
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">
