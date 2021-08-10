@@ -15,7 +15,7 @@ export default function MultiSelect({ setItemValue, renderItems, items, itemName
         <Autocomplete
         style={{margin:"12px 12px 12px 12px"}}
         multiple  
-        id="checkboxes-tags-demo"
+        id={itemName}
         options={items} 
         disableCloseOnSelect
         onChange={(event, value) => setItemValue(value)}
@@ -23,6 +23,7 @@ export default function MultiSelect({ setItemValue, renderItems, items, itemName
         renderOption={(option, { selected }) => (
           <React.Fragment>
             <Checkbox  
+              key={option[itemName]}
               style={{ marginRight: 8 }}
               checked={selected}
             />

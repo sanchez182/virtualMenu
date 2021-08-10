@@ -3,20 +3,36 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import CropDinIcon from '@material-ui/icons/CropDin';
 import { RootState } from '../../store';
-import Tables from '../../components/Tables';
+import Tables, { ITable } from '../../components/Tables';
 import StartAppBarPublic from '../../components/Layout/StartAppBarPublic';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'; 
+import { useState } from 'react';
+import { getDataTables } from '../../actionsApi/tableActions';
 
 interface TablesScreen extends RouteComponentProps<any> {
-    setSelectedTable: (arg0: number) => void;
+    setSelectedTable: (arg0: ITable) => void;
 }
 
 const TableScreen = ({ setSelectedTable }: TablesScreen) => {
     //tableList 
     const { t } = useTranslation();
+    const [tableList, setTableList] = useState<ITable[]>([])
+
+    useEffect(() => {  
+        async function fetchData() {
+            getDataTables().then((tables:ITable[]) => {
+                debugger
+              setTableList(tables)
+            })
+          }
+          fetchData();
+
+      }, []);
+
     const { language } = useSelector((state: RootState) => state.lang);
-    const { tableList } = useSelector((state: RootState) => state.restaurantData);
+   // const { tableList } = useSelector((state: RootState) => state.restaurantData);
 
 
     return (
@@ -54,11 +70,10 @@ const TableScreen = ({ setSelectedTable }: TablesScreen) => {
 
     
                 {
-                    tableList.map((table: any) => {
-                        const isSelected = table.selected ? "error" : "primary"
-                        return <Tables key={table.tableNumer} numberTable={table.tableNumber}
+                    tableList.length > 0 && tableList.map((table: ITable) => {
+                        return <Tables table = {table} key={table.tableNumber}
                             setSelectedTable={setSelectedTable}
-                            isAvailable={isSelected} />
+                           />
                     })
                 }
         </Grid>

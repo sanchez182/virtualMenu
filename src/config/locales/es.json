@@ -1,10 +1,16 @@
 {
   "home": "Home",
   "about": "About Us",
+  "table": "Mesa",
+  "dishes": "Platillos",
+  "drinks": "Bedidas",
   "available": "Disponible",
   "busy": "Ocupada",
   "textSelectTable": "Seleccione su mesa",
   "returnToHomepage": "Return to homepage",
+  "filterByFoodType":"Filtrar por tipo de comida",
+  "filterByFoodTime":"Filtrar por tiempo de comida",
+  "filterByDrinkType":"Filtrar por tipo de bebida",
 
   "sidebar": {
     "link":{

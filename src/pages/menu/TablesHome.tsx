@@ -9,17 +9,16 @@ const TablesHome: FC = () => {
   //tableList
   const [selectedTable, setSelectedTable] = useState<any>(null)
 
-
   return (
     <Grid container className={"imgFond"}>
-    {/*   {selectedTable ? */}
+      {selectedTable ? 
         <MenuComponent selectedTable={selectedTable} />
         :
         <>
- {/*          <StartAppBarPublic />
-          <TableScreen setSelectedTable={setSelectedTable} /> */}
+          <StartAppBarPublic />
+          <TableScreen setSelectedTable={setSelectedTable} /> 
         </>
-     {/*  } */}
+       } 
     </Grid>
 
   );

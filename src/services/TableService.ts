@@ -1,7 +1,7 @@
 import CommonService from "./CommonService";
 
-class PlateService {
-    endPoint = '/plate/'
+class TableService {
+    endPoint = '/tables/'
     baseUrl = process.env.REACT_APP_API_URL;
 
     private commonService : CommonService;
@@ -10,11 +10,14 @@ class PlateService {
         this.commonService = new CommonService(this.baseUrl);
     }
     
-    getAllPlates = async () => {
+    getDataTables = async () => {
         return this.commonService.getRequest(`${this.endPoint}`,false)
-    }
+    } 
 
+    updateTable =(idTable:string,body:any)=>{
+        return this.commonService.pustRequest(`${this.endPoint}/${idTable}`,body,false)
+    }
 
 }
 
-export default PlateService;
+export default TableService;

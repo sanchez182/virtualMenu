@@ -10,6 +10,7 @@ import DialogMenu from './DialogMenu';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { IModelDrinks, IModelFood } from '../interfaces/IModelMenuItem';
+import { ITable } from './Tables';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

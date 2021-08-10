@@ -76,8 +76,9 @@ const DialogMenu = ({ open, setOpenMenu,tableNumber}: IDialogMenu) => {
   const { _id } = useSelector((state: RootState) => state.restaurantData);
 
   const ordenFood = () => {
-    socket.emit('setOrderFood', {
-      state: "Enviado",
+    debugger
+    socket.emit('set-order-food', {
+      state: "Pendiente",
       restaurant: _id,
       tableNumber,
       itemsOrder: {

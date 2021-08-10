@@ -12,13 +12,17 @@ import MenuItems from './MenuItems';
 import ButtonDial from '../../components/ButtonDial';
 import { useDispatch, useSelector } from 'react-redux';
 import { IDrinkType, IFoodType, IModelDrinks, IModelFood, ITimeFood } from '../../interfaces/IModelMenuItem';
-import { Grid } from '@material-ui/core';
+import { Grid, List, Toolbar } from '@material-ui/core';
 import MultiSelect from '../../components/MultiSelect';
 import { SocketContext } from '../../context/SocketContext';
 import { Card } from '@material-ui/core';
 import { getAllDrinks } from '../../actionsApi/drinkActions';
 import { setMenuItems } from '../../store/actions/menuItemsActions';
 import { getAllPlates } from '../../actionsApi/plateActions';
+import { useTranslation } from 'react-i18next';
+import SpecialDialLenguage from '../../components/SpecialDialLenguage';
+import ChangeLenguage from '../../components/ChangeLenguage';
+import { ITable } from '../../components/Tables';
 
 //#region  styles
 interface TabPanelProps {
@@ -30,7 +34,7 @@ interface TabPanelProps {
 
 
 function TabPanel(props: TabPanelProps) {
-  const { children,className, value, index, ...other } = props;
+  const { children, className, value, index, ...other } = props;
 
   return (
     <div
@@ -60,13 +64,14 @@ function a11yProps(index: any) {
 
 
 interface IMenuProps {
-  selectedTable: number
+  selectedTable: ITable
 }
 
 export default function MenuComponent({ selectedTable }: IMenuProps) {
+  const {t} = useTranslation()
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const { foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
+  const {_id, foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
   const [value, setValue] = React.useState(0);
   const [drinkType, setDrinkType] = React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
@@ -87,14 +92,14 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
     fetchData();
   }, [dispatch, items])
 
-  /*   useEffect(() => {
+    useEffect(() => {
       // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
       socket.emit('selected-table', {
-        tableNumber: selectedTable, // mesa seleccionada
-        idRestaurant: _id,
+        _id: selectedTable._id, // mesa seleccionada
+        idRestaurant: _id, 
         isSelected: true
       });
-    }, [socket, selectedTable, _id]) */
+    }, [socket, selectedTable, _id]) 
 
   const setDrink = (value: any) => {
     setDrinkType(value as IDrinkType[])
@@ -111,7 +116,7 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
   };
 
   const withoutData = () => {
-    return     <Grid item xs={12} md={12} >
+    return <Grid item xs={12} md={12} >
       <Card style={{ marginTop: "48px" }}>
         <h3> Sin resultados</h3>
       </Card>
@@ -194,46 +199,48 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
 
   return (
     <>
-
-      <AppBar position='fixed'>
-        <Tabs centered     value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
-          <Tab label="Platillos"  icon={<LocalDiningIcon />} {...a11yProps(0)} />
-          <Tab label="Bebidas" icon={<LocalBarIcon />} {...a11yProps(1)} />
-          <Tab label="Ofertas/Combos"  icon={<FastfoodIcon />} {...a11yProps(2)} />
+      <AppBar position='fixed'>  
+        <Tabs centered value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
+          <Tab label={t("dishes")} icon={<LocalDiningIcon />} {...a11yProps(0)} />
+          <Tab label={t("drinks")} icon={<LocalBarIcon />} {...a11yProps(1)} />
+          <Tab label="Ofertas/Combos" icon={<FastfoodIcon />} {...a11yProps(2)} />
+          <Tab label={`${t("table")} #${selectedTable.tableNumber}`}disabled style ={{color:"yellow", fontSize:"20px"}} />
+          
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} className="tapPanelFullWidth" >
-        <Grid container justifyContent="center" style={{  marginTop: "48px" }}>
+      <TabPanel value={value} index={0} className="tapPanelFullWidth" > 
+        <Grid container style={{ marginTop: "48px" }}>
           <Grid item xs={12} md={12} >
-            <Card style={{ marginTop: "48px" }}>
+            
+            <ChangeLenguage />
+            <Card style={{ marginTop: "48px" }}> 
               <MultiSelect renderItems={foodTime}
                 items={foodTimeList}
                 setItemValue={setTimeFood}
                 itemName="foodTimeName"
-                placeHolder="Filtrar por tiempo de comida" />
+                placeHolder={t("filterByFoodTime")}/>
 
               <MultiSelect renderItems={foodType}
                 items={foodTypeList}
                 setItemValue={setFood}
                 itemName="foodTypeName"
-                placeHolder="Filtrar por tipo de comida" />
+                placeHolder={t("filterByFoodType")} />
             </Card>
-          </Grid>  
-          
+          </Grid>
           {renderFoodByFilters()}
         </Grid>
- 
+
       </TabPanel>
 
       <TabPanel value={value} index={1} className="tapPanelFullWidth">
-        <Grid container justifyContent="center" style={{  marginTop: "48px" }}>
+        <Grid container justifyContent="center" style={{ marginTop: "48px" }}>
           <Grid item xs={12} md={12}>
             <Card style={{ marginTop: "48px" }}>
               <MultiSelect renderItems={drinkType}
                 items={drinkTypeList}
                 setItemValue={setDrink}
                 itemName="drinkTypeName"
-                placeHolder="Filtrar por tipo de bebida" />
+                placeHolder={t("filterByDrinkType")} />
             </Card>
           </Grid>  {renderDrinksByFilter()}
         </Grid>
@@ -242,7 +249,7 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       <TabPanel value={value} index={2} className="tapPanelFullWidth">
         Item Three
       </TabPanel>
-      <ButtonDial tableNumber={selectedTable} />
+      <ButtonDial tableNumber={selectedTable.tableNumber} />
     </>
   );
 }

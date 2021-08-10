@@ -3,9 +3,14 @@
     "about": "About Us",
     "available": "Available",
     "busy": "Busy",
+    "table": "Table",
+    "dishes": "food dishes",
+    "drinks": "Drinks",
     "textSelectTable": "Select your table",
     "returnToHomepage": "Return to homepage",
-
+    "filterByFoodType":"Filter by type of food",
+    "filterByFoodTime":"Filter by time of food",
+    "filterByDrinkType":"Filter by type of drink",
     "sidebar": {
       "link":{
         "dashboarMenu": "Dashboard Menú",
