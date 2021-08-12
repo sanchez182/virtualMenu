@@ -32,8 +32,6 @@ const TableScreen = ({ setSelectedTable }: TablesScreen) => {
       }, []);
 
     const { language } = useSelector((state: RootState) => state.lang);
-   // const { tableList } = useSelector((state: RootState) => state.restaurantData);
-
 
     return (
         <Grid container className={"imgFond"}>

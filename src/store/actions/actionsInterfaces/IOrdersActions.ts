@@ -4,21 +4,22 @@ export const UPDATE_ORDER_STATUS = 'UPDATE_ORDER_STATUS';
 export const UPDATE_ORDER = 'UPDATE_ORDER'; 
 
 
-export interface IOrdersModel {
-  _id: String | null,
-  idRestaurant: String | null,
+export interface IOrder {
+  _id: string | null,
+  idRestaurant: string | null,
   tableNumber: number,
+  extraInfo: string,
   itemsOrder: {
     itemsFood: [],
     itemsDrink: [],
   }
-  state: String,
+  state: number,
   date: Date | null
 }
 
 interface SetOrderAction {
   type: String;
-  payload: IOrdersModel;
+  payload: IOrder;
 }
 
 export type IOrderAction= SetOrderAction;
