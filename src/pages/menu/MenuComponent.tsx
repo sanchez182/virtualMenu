@@ -92,14 +92,15 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
     fetchData();
   }, [dispatch, items])
 
-    useEffect(() => {
-      // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
-      socket.emit('selected-table', {
-        _id: selectedTable._id, // mesa seleccionada
-        idRestaurant: _id, 
-        isSelected: true
-      });
-    }, [socket, selectedTable, _id]) 
+
+  useEffect(() => {
+    // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
+    socket?.emit('selected-table', {
+      _id: selectedTable._id, // mesa seleccionada
+      idRestaurant: _id, 
+      isSelected: true
+    });
+  }, [socket, selectedTable, _id]) 
 
   const setDrink = (value: any) => {
     setDrinkType(value as IDrinkType[])

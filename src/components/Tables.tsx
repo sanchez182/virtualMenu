@@ -1,5 +1,7 @@
 import { Card, CardActionArea, CardContent, Grid } from '@material-ui/core';
 import DeckIcon from '@material-ui/icons/Deck'; 
+import { useDispatch } from 'react-redux';
+import { setTableSeleted } from '../store/actions/tableSeleted';
 
 
 export interface ITable {
@@ -15,13 +17,14 @@ interface TablesType {
 }
 
 const Tables = ({ table ,setSelectedTable}: TablesType) => {
+    const dispatch = useDispatch()
     return ( 
                 <Grid item xs={4} md={4} >
                     <Card style={{ backgroundColor: " #f1f1f196" }} >
                         <CardActionArea>
                             <CardContent
                                 id={table._id}
-                                onClick={(e) => setSelectedTable(table)}
+                                onClick={(e) => dispatch(setTableSeleted(table))}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',

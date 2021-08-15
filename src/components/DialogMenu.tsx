@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -11,10 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { IModelDrinks, IModelFood } from '../interfaces/IModelMenuItem';
-import { Card, CardContent, CardHeader, TextField } from '@material-ui/core';
+import { Card, CardContent, CardHeader, DialogContentText, TextField } from '@material-ui/core';
 import { SocketContext } from '../context/SocketContext';
 import { useState } from 'react';
-import { createOrder, createOrUpdateOrder } from '../actionsApi/orderActions';
+import { createOrUpdateOrder } from '../actionsApi/orderActions';
 import { setOrder, updateOrderStatus } from '../store/actions/ordersActions';
 import { IOrder } from '../store/actions/actionsInterfaces/IOrdersActions';
 
@@ -78,11 +78,16 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
   const { socket } = useContext(SocketContext);
   const dispatch = useDispatch();
   const order:IOrder = useSelector((state: RootState) => state.orderData);
+  const clientId = useSelector((state: RootState) => state.socketClientId);
 
   const [extraInfo, setOpenExtraInfo] = useState({
     showDialog: false,
     message: ""
   })
+  useEffect(() => {
+    setOpenExtraInfo({...extraInfo, message: order.extraInfo})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { _id } = useSelector((state: RootState) => state.restaurantData);
 
@@ -115,8 +120,12 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
         itemsDrink
       }
     }).then((order: IOrder)=>{
-      debugger
-      socket.emit('set-order-food',order);
+      const message = {
+        order,
+        clientId
+      }
+      socket.emit('set-order-food',message);
+      setOpenExtraInfo({ ...extraInfo, showDialog: false })
       dispatch(setOrder(order))
   })
 
@@ -124,9 +133,10 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
 
   React.useEffect(() => {
     socket?.on('change-status-order-client', (order: IOrder) => {
-      updateOrderStatus(order.state)
+      debugger
+      dispatch(updateOrderStatus(order.state))
     })
-  }, [_id, socket]);
+  }, [_id, dispatch, socket]);
   
   return (
     <>
@@ -179,10 +189,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpenExtraInfo({ ...extraInfo, showDialog: true })} color="primary">
-            Ingresar comentarios sobre pedido
-          </Button>
-          <Button autoFocus onClick={ordenFood} color="primary">
-            Pedir comida
+              Enviar orden
           </Button>
         </DialogActions>
       </Dialog>
@@ -192,6 +199,9 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
           Comentarios adicionales
         </DialogTitle>
         <DialogContent dividers>
+          <DialogContentText>
+            <h3>Desea agregar comentarios adicionales sobre su pedido?</h3>
+          </DialogContentText>
           <TextField 
             fullWidth
             type="text"
@@ -202,6 +212,9 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
  
         </DialogContent>
         <DialogActions>
+          <Button autoFocus onClick={ordenFood} color="primary">
+            Realizar pedido
+          </Button>
           <Button autoFocus onClick={() => setOpenExtraInfo({ ...extraInfo, showDialog: false })} color="primary">
             Salir
           </Button> 

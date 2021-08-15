@@ -1,7 +1,8 @@
 import {  useEffect } from 'react';
 import { createContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSocket } from '../hooks/useSocket'  
+import { setSocketClient } from '../store/actions/socketClientAction';
 
 export const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
@@ -9,18 +10,28 @@ export const SocketProvider = ({ children }) => {
     const { socket, online, conectarSocket, desconectarSocket } = useSocket('http://localhost:4002');
     const { _id } = useSelector((state) => state.restaurantData);
 
+    const dispatch = useDispatch()
     useEffect(() => {
         if ( _id) {  
-            console.log("Se vuelve a vonectar")
             conectarSocket();
          }  
     }, [  _id,conectarSocket ]);
 
   useEffect(() => {
+      debugger
     if ( !_id) {  
             desconectarSocket();
         }
     }, [ _id, desconectarSocket ]);
+
+
+    
+    useEffect(() => {
+        socket?.on('client-id', (data) => {
+            debugger
+            dispatch(setSocketClient(data))
+            });
+    }, [ socket ])
 
     useEffect(() => {
         socket?.on('table', (mensaje) => {

@@ -7,8 +7,10 @@ export const useSocket = ( serverPath ) => {
     const [ online, setOnline ] = useState(false);
 
     const { _id } = useSelector((state) => state.restaurantData);
+    const selectedTable = useSelector((state) => state.selectedTable)
 
     const conectarSocket = useCallback( () => {
+        debugger
         console.log("entra a conectarse una vez mas")
         const socketTemp = io.connect( serverPath, { 
             transports: ['websocket'],
@@ -16,13 +18,15 @@ export const useSocket = ( serverPath ) => {
             forceNew: true,
             query: { 
                 isClient: true,
-                uidClient : _id
+                uidClient : _id,
+                table: selectedTable.tableNumber
             }
         });
         setSocket( socketTemp );
     },[ serverPath,_id ]);
 
     const desconectarSocket = useCallback( () => {
+        debugger
         socket?.disconnect();
     },[ socket ]);
 
@@ -32,7 +36,9 @@ export const useSocket = ( serverPath ) => {
     }, [socket])
 
     useEffect(() => {
-        socket?.on('connect', () => setOnline( true ));
+        socket?.on('connect', (data) => {
+            debugger
+            setOnline( true )});
     }, [ socket ])
 
     useEffect(() => {
