@@ -1,14 +1,17 @@
 import {  useEffect } from 'react';
 import { createContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { updateOrder } from '../actionsApi/orderActions';
 import { useSocket } from '../hooks/useSocket'  
+import { updateOrderClientId } from '../store/actions/ordersActions';
 import { setSocketClient } from '../store/actions/socketClientAction';
 
 export const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
     //TODO: sacar url de env variables
-    const { socket, online, conectarSocket, desconectarSocket } = useSocket('http://localhost:4002');
+    const { socket, online, conectarSocket, desconectarSocket } = useSocket(process.env.REACT_APP_SOCKET_API);
     const { _id } = useSelector((state) => state.restaurantData);
+    const order = useSelector((state) => state.orderData);
 
     const dispatch = useDispatch()
     useEffect(() => {
@@ -30,8 +33,17 @@ export const SocketProvider = ({ children }) => {
         socket?.on('client-id', (data) => {
             debugger
             dispatch(setSocketClient(data))
+            const newOrderData = {...order}
+            if(order._id){
+                newOrderData.clientId = data
+                updateOrder(newOrderData).then((response)=>{
+                    debugger
+                     dispatch(updateOrderClientId(data))
+                })
+            }
             });
-    }, [ socket ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, socket]) 
 
     useEffect(() => {
         socket?.on('table', (mensaje) => {

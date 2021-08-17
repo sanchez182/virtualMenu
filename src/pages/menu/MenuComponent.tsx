@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -12,17 +12,18 @@ import MenuItems from './MenuItems';
 import ButtonDial from '../../components/ButtonDial';
 import { useDispatch, useSelector } from 'react-redux';
 import { IDrinkType, IFoodType, IModelDrinks, IModelFood, ITimeFood } from '../../interfaces/IModelMenuItem';
-import { Grid, List, Toolbar } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import MultiSelect from '../../components/MultiSelect';
-import { SocketContext } from '../../context/SocketContext';
 import { Card } from '@material-ui/core';
 import { getAllDrinks } from '../../actionsApi/drinkActions';
 import { setMenuItems } from '../../store/actions/menuItemsActions';
 import { getAllPlates } from '../../actionsApi/plateActions';
 import { useTranslation } from 'react-i18next';
-import SpecialDialLenguage from '../../components/SpecialDialLenguage';
 import ChangeLenguage from '../../components/ChangeLenguage';
 import { ITable } from '../../components/Tables';
+import { masterIdEqualToClientId } from '../../helpers/checkSocketsId';
+import DialogComponent from '../../components/DialogComponent';
+import { openStdin } from 'process';
 
 //#region  styles
 interface TabPanelProps {
@@ -68,15 +69,17 @@ interface IMenuProps {
 }
 
 export default function MenuComponent({ selectedTable }: IMenuProps) {
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const {_id, foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
+  const { foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
+  const { socketClientId, socketIdMaster } = useSelector((state: RootState) => state.socketClient);
   const [value, setValue] = React.useState(0);
+  const [openDialog, setOpenDialog] = useState(true)
+
   const [drinkType, setDrinkType] = React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
   const [foodTime, setFoodTime] = React.useState<ITimeFood[]>([]);
-  const { socket } = useContext(SocketContext);
 
   const dispatch = useDispatch()
   useEffect(() => {
@@ -91,16 +94,6 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
     }
     fetchData();
   }, [dispatch, items])
-
-
-  useEffect(() => {
-    // TODO: emitir la mesa que se aparta para mostrarlo en el lado del administrador y a los otros clientes
-    socket?.emit('selected-table', {
-      _id: selectedTable._id, // mesa seleccionada
-      idRestaurant: _id, 
-      isSelected: true
-    });
-  }, [socket, selectedTable, _id]) 
 
   const setDrink = (value: any) => {
     setDrinkType(value as IDrinkType[])
@@ -200,26 +193,26 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
 
   return (
     <>
-      <AppBar position='fixed'>  
+      <AppBar position='fixed'>
         <Tabs centered value={value} onChange={handleChange} aria-label="restaurant-virtual-menu">
           <Tab label={t("dishes")} icon={<LocalDiningIcon />} {...a11yProps(0)} />
           <Tab label={t("drinks")} icon={<LocalBarIcon />} {...a11yProps(1)} />
           <Tab label="Ofertas/Combos" icon={<FastfoodIcon />} {...a11yProps(2)} />
-          <Tab label={`${t("table")} #${selectedTable.tableNumber}`}disabled style ={{color:"yellow", fontSize:"20px"}} />
-          
+          <Tab label={`${t("table")} #${selectedTable.tableNumber}`} disabled style={{ color: "yellow", fontSize: "20px" }} />
+
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} className="tapPanelFullWidth" > 
+      <TabPanel value={value} index={0} className="tapPanelFullWidth" >
         <Grid container style={{ marginTop: "48px" }}>
           <Grid item xs={12} md={12} >
-            
+
             <ChangeLenguage />
-            <Card style={{ marginTop: "48px" }}> 
+            <Card style={{ marginTop: "48px" }}>
               <MultiSelect renderItems={foodTime}
                 items={foodTimeList}
                 setItemValue={setTimeFood}
                 itemName="foodTimeName"
-                placeHolder={t("filterByFoodTime")}/>
+                placeHolder={t("filterByFoodTime")} />
 
               <MultiSelect renderItems={foodType}
                 items={foodTypeList}
@@ -250,7 +243,22 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       <TabPanel value={value} index={2} className="tapPanelFullWidth">
         Item Three
       </TabPanel>
-      <ButtonDial tableNumber={selectedTable.tableNumber} />
+      {(!socketIdMaster || masterIdEqualToClientId(socketIdMaster, socketClientId)) &&
+        <>
+          <ButtonDial tableNumber={selectedTable.tableNumber} />
+          <DialogComponent
+            open={openDialog}
+            setOpenMenu={(open) => setOpenDialog(open)}
+            dialogContentText= {`Guarde este código ${socketClientId}, servirá para revisar el estado de su orden y compartir el menú con sus acompañantes`}
+            title="Código de mesa para compartir"
+            children={<h3>{socketIdMaster}</h3>}
+            actionButton={()=>setOpenDialog(false)}
+            textActionButton="Aceptar"
+          />
+        </>
+      }
+
+
     </>
   );
 }

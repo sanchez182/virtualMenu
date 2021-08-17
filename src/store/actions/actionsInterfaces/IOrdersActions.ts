@@ -1,6 +1,7 @@
 
 export const SET_ORDER_STATE = 'SET_ORDER_STATE'; 
 export const UPDATE_ORDER_STATUS = 'UPDATE_ORDER_STATUS'; 
+export const UPDATE_ORDER_CLIENTID = 'UPDATE_ORDER_CLIENTID'; 
 export const UPDATE_ORDER = 'UPDATE_ORDER'; 
 
 
@@ -9,6 +10,7 @@ export interface IOrder {
   idRestaurant: string | null,
   tableNumber: number,
   extraInfo: string,
+  clientId: string,
   itemsOrder: {
     itemsFood: [],
     itemsDrink: [],

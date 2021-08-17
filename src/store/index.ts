@@ -16,7 +16,7 @@ const rootReducer = combineReducers({
   menuItemReducer,
   selectedTable: tableSelectedReducer,
   orderData: ordersReducer,
-  socketClientId: socketClientReducer,
+  socketClient: socketClientReducer,
   openMessageAlert:alertComponentReducer,
   requestReducer,
   

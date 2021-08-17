@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { createOrUpdateOrder } from '../actionsApi/orderActions';
 import { setOrder, updateOrderStatus } from '../store/actions/ordersActions';
 import { IOrder } from '../store/actions/actionsInterfaces/IOrdersActions';
+import DialogComponent from './DialogComponent';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -77,19 +78,18 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
   const renderDrink = items.drink.filter((x: IModelDrinks) => x.cant > 0)
   const { socket } = useContext(SocketContext);
   const dispatch = useDispatch();
-  const order:IOrder = useSelector((state: RootState) => state.orderData);
-  const clientId = useSelector((state: RootState) => state.socketClientId);
+  const order: IOrder = useSelector((state: RootState) => state.orderData);
+  const { socketClientId } = useSelector((state: RootState) => state.socketClient);
+  const { _id } = useSelector((state: RootState) => state.restaurantData);
 
   const [extraInfo, setOpenExtraInfo] = useState({
     showDialog: false,
     message: ""
   })
   useEffect(() => {
-    setOpenExtraInfo({...extraInfo, message: order.extraInfo})
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setOpenExtraInfo({ ...extraInfo, message: order.extraInfo })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const { _id } = useSelector((state: RootState) => state.restaurantData);
 
   const ordenFood = () => {
     debugger
@@ -109,25 +109,22 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
       })
     })
 
-    createOrUpdateOrder( {
+    createOrUpdateOrder({
       _id: order._id,
       state: 1,
-      restaurant: _id,
+      idRestaurant: _id,
       extraInfo: extraInfo.message,
       tableNumber,
+      clientId: socketClientId,
       itemsOrder: {
         itemsFood, // mesa seleccionada
         itemsDrink
       }
-    }).then((order: IOrder)=>{
-      const message = {
-        order,
-        clientId
-      }
-      socket.emit('set-order-food',message);
+    }).then((order: IOrder) => {
+      socket.emit('set-order-food', order);
       setOpenExtraInfo({ ...extraInfo, showDialog: false })
       dispatch(setOrder(order))
-  })
+    })
 
   }
 
@@ -137,7 +134,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
       dispatch(updateOrderStatus(order.state))
     })
   }, [_id, dispatch, socket]);
-  
+
   return (
     <>
       <Dialog fullWidth onClose={setOpenMenu} aria-labelledby="customized-dialog-title" open={open}>
@@ -145,7 +142,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
           Listado de productos seleccionados
         </DialogTitle>
         <DialogContent dividers>
-         {order.state && <h4>Estado : {order.state === 1 ? "Enviada" : (order.state === 3 ? "Orden en proceso": "Sin enviar")}</h4>} 
+          {order.state && <h4>Estado : {order.state === 1 ? "Enviada" : (order.state === 3 ? "Orden en proceso" : "Sin enviar")}</h4>}
           <h4>Platillos</h4>
           {renderFood.length > 0 ? renderFood.map((item: IModelFood) => {
             return <Card>
@@ -189,37 +186,26 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpenExtraInfo({ ...extraInfo, showDialog: true })} color="primary">
-              Enviar orden
+            Enviar orden
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog fullWidth onClose={() => setOpenExtraInfo({ ...extraInfo, showDialog: false })} aria-labelledby="customized-dialog-title" open={extraInfo.showDialog}>
-      <DialogTitle id="customized-dialog-title" onClose={() => setOpenExtraInfo({ ...extraInfo, showDialog: false })}>
-          Comentarios adicionales
-        </DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText>
-            <h3>Desea agregar comentarios adicionales sobre su pedido?</h3>
-          </DialogContentText>
-          <TextField 
-            fullWidth
-            type="text"
-            value={extraInfo.message}
-            onChange={(e) => setOpenExtraInfo({ ...extraInfo, message: e.target.value })}
-            multiline={true}
-            maxRows={4}/>
- 
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={ordenFood} color="primary">
-            Realizar pedido
-          </Button>
-          <Button autoFocus onClick={() => setOpenExtraInfo({ ...extraInfo, showDialog: false })} color="primary">
-            Salir
-          </Button> 
-        </DialogActions>
-      </Dialog>
+      <DialogComponent
+        open={extraInfo.showDialog}
+        setOpenMenu={(open) => setOpenExtraInfo({ ...extraInfo, showDialog: open })}
+        dialogContentText="¿Desea agregar comentarios adicionales sobre su pedido?"
+        title="Comentarios adicionales"
+        children={<TextField
+          fullWidth
+          type="text"
+          value={extraInfo.message}
+          onChange={(e) => setOpenExtraInfo({ ...extraInfo, message: e.target.value })}
+          multiline={true}
+          maxRows={4} />}
+        actionButton={ordenFood}
+        textActionButton="Realizar pedido"
+      />
     </>
   );
 }

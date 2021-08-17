@@ -23,6 +23,11 @@ class OrderService {
         return this.commonService.pustRequest(`${this.endPoint}${idOrder}`,body,false)
     }
 
+    updateOrderClientId = async (idOrder:string,clientId:string)=>{
+        return this.commonService.pustRequest(`${this.endPoint}${idOrder}/${clientId}`,{},false)
+    }
+
+    
     
 
 }

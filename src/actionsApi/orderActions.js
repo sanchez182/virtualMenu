@@ -14,18 +14,21 @@ export const getOrderById = async (id) => {
 
 export const createOrder = async (body) => {
   const response = await service.createOrder(body)
-  dispatch(setOpenMessageAlert({ show: true, message: 'Se creo correctamente el orden', severity: 'success' }));
+  dispatch(setOpenMessageAlert({ show: true, message: 'Se creo correctamente la orden', severity: 'success' }));
   return (response.data.order)
 }
 
 
 export const updateOrder = async (idOrder, body) => {
   const response = await service.updateOrder(idOrder, body)
-  if (response.status === 200) {
-    dispatch(setOpenMessageAlert({ show: true, message: 'Se actualizo correctamente el orden', severity: 'success' }));
-    return  response.data.order.value
-  }
-  return false
+    dispatch(setOpenMessageAlert({ show: true, message: 'Se actualizo correctamente la orden', severity: 'success' }));
+  return response.data.order.value
+}
+
+export const updateOrderClientId = async (idOrder, clientId) => {
+  const response = await service.updateOrderClientId(idOrder, clientId)
+    dispatch(setOpenMessageAlert({ show: true, message: 'Se actualizo correctamente la orden', severity: 'success' }));
+  return response.data.order.value
 }
 
 
