@@ -7,11 +7,9 @@ export const useSocket = ( serverPath ) => {
     const [ online, setOnline ] = useState(false);
 
     const { _id } = useSelector((state) => state.restaurantData);
-    const selectedTable = useSelector((state) => state.selectedTable)
+    const {selectedTable} = useSelector((state) => state.dataTables)
 
     const conectarSocket = useCallback( () => {
-        debugger
-        console.log("entra a conectarse una vez mas")
         const socketTemp = io.connect( serverPath, { 
             transports: ['websocket'],
             autoConnect: true,

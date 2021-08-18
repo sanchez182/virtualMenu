@@ -2,8 +2,12 @@ import { Card, CardActionArea, CardContent, Grid, TextField } from '@material-ui
 import DeckIcon from '@material-ui/icons/Deck';
 import { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { getAndUpdateOrderBySocketClientId } from '../actionsApi/orderActions';
 import { SocketContext } from '../context/SocketContext';
 import { RootState } from '../store';
+import { IOrder } from '../store/actions/actionsInterfaces/IOrdersActions';
+import { ITableModel } from '../store/actions/actionsInterfaces/ITableActions';
+import { setMenuItems } from '../store/actions/menuItemsActions';
 import { setSocketClientMaster } from '../store/actions/socketClientAction';
 import { setTableSeleted } from '../store/actions/tableSeleted';
 import DialogComponent from './DialogComponent';
@@ -18,19 +22,22 @@ export interface ITable {
 
 interface TablesType {
     table: ITable;
-    setSelectedTable: (arg0: ITable) => void;
 }
 
-const Tables = ({ table, setSelectedTable }: TablesType) => {
+
+const Tables = ({ table }: TablesType) => {
     const [openDialog, setOpenDialog] = useState(false)
-    const [idMaster, setIdMaster] = useState("")
+    const [trackingCode, setTrackingCode] = useState("")
     const { socket } = useContext(SocketContext);
     const { _id } = useSelector((state: RootState) => state.restaurantData);
-
     const dispatch = useDispatch()
 
-    const checkIfClientIdIsMaster = (table: ITable) => {
-        debugger
+    const tableModel: ITableModel = {
+        selectedTable: table,
+        tableList: []
+    }
+
+    const setIdMasterTogetData = (table: ITable) => {
         if (table.selected) {
             setOpenDialog(true)
         } else {
@@ -39,13 +46,13 @@ const Tables = ({ table, setSelectedTable }: TablesType) => {
                 idRestaurant: _id,
                 isSelected: true
             });
-            dispatch(setTableSeleted(table))
+            dispatch(setTableSeleted(tableModel))
         }
     }
 
-    const setReducers=()=>{
-        dispatch(setSocketClientMaster(idMaster))
-        dispatch(setTableSeleted(table))
+    const setReducers = () => {
+        dispatch(setSocketClientMaster(trackingCode))
+        dispatch(setTableSeleted(tableModel))
     }
     return (
         <Grid item xs={4} md={4} >
@@ -53,7 +60,7 @@ const Tables = ({ table, setSelectedTable }: TablesType) => {
                 <CardActionArea>
                     <CardContent
                         id={table._id}
-                        onClick={(e) => checkIfClientIdIsMaster(table)}
+                        onClick={(e) => setIdMasterTogetData(table)}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -79,9 +86,9 @@ const Tables = ({ table, setSelectedTable }: TablesType) => {
                 children={<TextField
                     fullWidth
                     type="text"
-                    value={idMaster}
-                    onChange={(e) => setIdMaster(e.target.value)} />}
-                actionButton={()=>setReducers()}
+                    value={trackingCode}
+                    onChange={(e) => setTrackingCode(e.target.value)} />}
+                actionButton={() => setReducers()}
                 textActionButton="Ingresar"
             />
         </Grid>

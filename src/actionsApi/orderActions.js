@@ -6,9 +6,9 @@ import { setOpenMessageAlert } from "../store/actions/messageAlertActions";
 const dispatch = store.dispatch;
 const service = new OrderService();
 
-export const getOrderById = async (id) => {
-  const response = await service.getOrderById(id)
-  return response.data
+export const getAndUpdateOrderBySocketClientId = async (id, newSocketId) => {
+  const response = await service.updateOrderBySocketClientId(id,newSocketId)
+  return response.data.order.value
 }
 
 

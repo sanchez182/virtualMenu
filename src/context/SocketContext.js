@@ -5,6 +5,7 @@ import { updateOrder } from '../actionsApi/orderActions';
 import { useSocket } from '../hooks/useSocket'  
 import { updateOrderClientId } from '../store/actions/ordersActions';
 import { setSocketClient } from '../store/actions/socketClientAction';
+import { addOrUpdateTable } from '../store/actions/tableSeleted';
 
 export const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
@@ -30,9 +31,27 @@ export const SocketProvider = ({ children }) => {
 
     
     useEffect(() => {
-        socket?.on('client-id', (data) => {
+        socket?.on('create-or-update-table', (table) => {
             debugger
+            dispatch(addOrUpdateTable({
+                selectedTable: "",
+                tableList: table
+            }))
+        
+            });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, socket]) 
+
+    useEffect(() => {
+        debugger
+        socket?.on('client-id', (data) => {
             dispatch(setSocketClient(data))
+            
+            debugger
+            if(!localStorage.getItem("oldSocketClientId")){
+                localStorage.setItem("oldSocketClientId",data)
+            }
+
             const newOrderData = {...order}
             if(order._id){
                 newOrderData.clientId = data

@@ -8,13 +8,13 @@ import alertComponentReducer from './reducers/alertComponentReducer';
 import requestReducer from './reducers/requestReducer';
 import restaurantReducer from './reducers/restaurantReducer ';
 import ordersReducer from './reducers/ordersReducer';
-import tableSelectedReducer from './reducers/tableSelectedReducer';
+import tablesDataReducer from './reducers/tableSelectedReducer';
 import socketClientReducer from './reducers/socketClientReducer';
 
 const rootReducer = combineReducers({
   lang: langReducer,
   menuItemReducer,
-  selectedTable: tableSelectedReducer,
+  dataTables: tablesDataReducer,
   orderData: ordersReducer,
   socketClient: socketClientReducer,
   openMessageAlert:alertComponentReducer,

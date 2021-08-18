@@ -9,7 +9,7 @@ export interface IModelFood {
      showInMenu: boolean;
      ingredients: [];
      updatatedDate: Date;
-     cant: number,
+     quantity: number,
      _id: number
   }
 
@@ -23,7 +23,7 @@ export interface IModelFood {
     ingredients : [];
     drinkType: string;
     showInMenu: boolean
-    cant: number,
+    quantity: number,
     _id: number
   }
 

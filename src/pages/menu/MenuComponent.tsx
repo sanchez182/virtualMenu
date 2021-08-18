@@ -23,7 +23,9 @@ import ChangeLenguage from '../../components/ChangeLenguage';
 import { ITable } from '../../components/Tables';
 import { masterIdEqualToClientId } from '../../helpers/checkSocketsId';
 import DialogComponent from '../../components/DialogComponent';
-import { openStdin } from 'process';
+import { getAndUpdateOrderBySocketClientId } from '../../actionsApi/orderActions';
+import { IOrder } from '../../store/actions/actionsInterfaces/IOrdersActions';
+import { SocketContext } from '../../context/SocketContext';
 
 //#region  styles
 interface TabPanelProps {
@@ -72,11 +74,12 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
   const { t } = useTranslation()
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const { foodTimeList, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
+  const { foodTimeList, _id, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
   const { socketClientId, socketIdMaster } = useSelector((state: RootState) => state.socketClient);
   const [value, setValue] = React.useState(0);
   const [openDialog, setOpenDialog] = useState(true)
 
+  const { socket } = useContext(SocketContext);
   const [drinkType, setDrinkType] = React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
   const [foodTime, setFoodTime] = React.useState<ITimeFood[]>([]);
@@ -88,12 +91,36 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         const [drinks, plates] = values
         items.drink = drinks
         items.food = plates
-        dispatch(setMenuItems(items))
+        debugger
+        if(localStorage.getItem("oldSocketClientId")=== socketIdMaster){
+          //traiga la data y  
+          getAndUpdateOrderBySocketClientId(localStorage.getItem("oldSocketClientId"), socketClientId).then((order:IOrder)=>{
+              order.itemsOrder.itemsFood.length > 0 && order.itemsOrder.itemsFood.forEach((food:any)=>{
+                  const index = items.food.findIndex((x: any) => x._id === food.plate._id )
+                  items.food[index].quantity = food.quantity
+              })
+              order.itemsOrder.itemsDrink.length > 0 && order.itemsOrder.itemsFood.forEach((element:any)=>{
+                  const index = items.drink.findIndex((x: any) => x._id === element.drink._id )
+                  items.drink[index].quantity = element.quantity
+              })
+              socket?.emit('change-client-id-order', {
+                order: {_id: order._id,clientId: socketClientId}, 
+                uidClient: _id,
+            });
+              dispatch(setMenuItems(items));
+              //actualice el idsocket de la orden 
+          })
+
+      }else{
+            
+        dispatch(setMenuItems(items));
+      }
+
       }).catch(error => {
       });
     }
     fetchData();
-  }, [dispatch, items])
+  }, [dispatch, items, socketClientId, socketIdMaster])
 
   const setDrink = (value: any) => {
     setDrinkType(value as IDrinkType[])
@@ -243,15 +270,15 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       <TabPanel value={value} index={2} className="tapPanelFullWidth">
         Item Three
       </TabPanel>
-      {(!socketIdMaster || masterIdEqualToClientId(socketIdMaster, socketClientId)) &&
+      {(!socketIdMaster || masterIdEqualToClientId(socketIdMaster, localStorage.getItem("oldSocketClientId"))) &&
         <>
           <ButtonDial tableNumber={selectedTable.tableNumber} />
           <DialogComponent
             open={openDialog}
             setOpenMenu={(open) => setOpenDialog(open)}
-            dialogContentText= {`Guarde este código ${socketClientId}, servirá para revisar el estado de su orden y compartir el menú con sus acompañantes`}
+            dialogContentText= {`Guarde el siguiente código, servirá para revisar el estado de su orden y compartir el menú con sus acompañantes`}
             title="Código de mesa para compartir"
-            children={<h3>{socketIdMaster}</h3>}
+            children={<h3>{socketIdMaster ? socketIdMaster : socketClientId}</h3>}
             actionButton={()=>setOpenDialog(false)}
             textActionButton="Aceptar"
           />

@@ -8,7 +8,6 @@ const InitialState: ISocketIdClients = {
 const socketClientReducer = (state: ISocketIdClients = InitialState, action: any) => {
   switch (action.type) {
     case SET_SOCKET_CLIENT:
-      localStorage.setItem("socketClientId",action.payload)
       return { ...state, socketClientId: action.payload }
 
     case SET_SOCKET_CLIENT_MASTER:

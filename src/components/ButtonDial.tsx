@@ -45,8 +45,8 @@ export default function ButtonDial({tableNumber}:any) {
   const classes = useStyles();
   const { items }= useSelector((state: RootState) => state.menuItemReducer);
 
-  const renderOrderFood = items.food.filter((x:IModelFood)=> x.cant > 0).length > 0  || 
-  items.drink.filter((x:IModelDrinks)=> x.cant > 0).length > 0  ? true : false
+  const renderOrderFood = items.food.filter((x:IModelFood)=> x.quantity > 0).length > 0  || 
+  items.drink.filter((x:IModelDrinks)=> x.quantity > 0).length > 0  ? true : false
   const [open, setOpen] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
 

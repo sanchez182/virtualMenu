@@ -74,8 +74,8 @@ interface IDialogMenu {
 }
 const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
-  const renderFood = items.food.filter((x: IModelFood) => x.cant > 0)
-  const renderDrink = items.drink.filter((x: IModelDrinks) => x.cant > 0)
+  const renderFood = items.food.filter((x: IModelFood) => x.quantity > 0)
+  const renderDrink = items.drink.filter((x: IModelDrinks) => x.quantity > 0)
   const { socket } = useContext(SocketContext);
   const dispatch = useDispatch();
   const order: IOrder = useSelector((state: RootState) => state.orderData);
@@ -97,7 +97,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
     renderFood.forEach(item => {
       itemsFood.push({
         plate: item._id,
-        quantity: item.cant
+        quantity: item.quantity
       })
     })
 
@@ -105,7 +105,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
     renderDrink.forEach(item => {
       itemsDrink.push({
         drink: item._id,
-        quantity: item.cant
+        quantity: item.quantity
       })
     })
 
@@ -114,6 +114,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
       state: 1,
       idRestaurant: _id,
       extraInfo: extraInfo.message,
+      trackingCode: localStorage.getItem("oldSocketClientId"),
       tableNumber,
       clientId: socketClientId,
       itemsOrder: {
@@ -147,7 +148,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
           {renderFood.length > 0 ? renderFood.map((item: IModelFood) => {
             return <Card>
               <CardHeader
-                title={<div>{item.plateName} <p style={{ float: "right" }}> Cant.{item.cant}</p></div>}
+                title={<div>{item.plateName} <p style={{ float: "right" }}> Cant.{item.quantity}</p></div>}
               />
               <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
@@ -168,7 +169,7 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
           {renderDrink.length > 0 ? renderDrink.map((item: IModelDrinks) => {
             return <Card>
               <CardHeader
-                title={`${item.drinkName}   Cant.${item.cant}`}
+                title={`${item.drinkName}   Cant.${item.quantity}`}
               />
               <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">

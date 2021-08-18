@@ -11,8 +11,8 @@ class OrderService {
     }
     
 
-    getOrderById = async (id:string) => {
-        return this.commonService.getRequest(`${this.endPoint}${id}`,true)
+    updateOrderBySocketClientId = async (id:string,newSocketId :string) => {
+        return this.commonService.pustRequest(`${this.endPoint}updateClient/${id}`,{socketClientId:newSocketId},false)
     }
 
     createOrder =async (body:any)=>{

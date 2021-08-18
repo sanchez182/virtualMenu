@@ -11,6 +11,7 @@ export interface IOrder {
   tableNumber: number,
   extraInfo: string,
   clientId: string,
+  trackingCode:string,
   itemsOrder: {
     itemsFood: [],
     itemsDrink: [],

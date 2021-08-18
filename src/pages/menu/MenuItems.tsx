@@ -29,17 +29,17 @@ interface MenuItem {
 
 export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
   const classes = useStyles();
-  const quantity = item.cant ? item.cant : 0
+  const quantity = item.quantity ? item.quantity : 0
   const dispatch = useDispatch();
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
   const addPlate = (cant: number) => {
     const newValue = cant + quantity;
     let indexPlate = items[itemType].findIndex((x: any) => x._id === item._id )
-    items[itemType][indexPlate].cant = newValue;
+    items[itemType][indexPlate].quantity = newValue;
     newValue >= 0 && dispatch(setMenuItems(items));
   }
 
-  const color = item.cant > 0 ? { backgroundColor: "lightgreen", marginTop: "4px" } : { marginTop: "4px" }
+  const color = item.quantity > 0 ? { backgroundColor: "lightgreen", marginTop: "4px" } : { marginTop: "4px" }
   
   return (
     <div className={classes.root}>
@@ -57,7 +57,7 @@ export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
                 { item.description.substring(0,20)}</Typography>
 
             </Grid>
-            {item.cant > 0 && <Grid item xs={3}>
+            {item.quantity > 0 && <Grid item xs={3}>
               <span>Cant: {quantity}</span>
             </Grid>}
 
@@ -65,7 +65,7 @@ export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
         </AccordionSummary>
 
         <AccordionDetails style={{    display: "block"}}>
-          <CardItemMenu addItem={addPlate} cant={quantity} image={item.urlImage}
+          <CardItemMenu addItem={addPlate} quantity={quantity} image={item.urlImage}
            itemName={item[itemName]} description={item.description} />
         </AccordionDetails>
       </Accordion>

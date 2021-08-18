@@ -34,13 +34,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface ICardItemMenu {
   addItem: (arg0:number)=> void;
-  cant: number;
+  quantity: number;
   description: string;
   itemName: string;
   image: string;
 }
 
-const CardItemMenu =({ addItem, cant,description,itemName,image }: ICardItemMenu) =>{
+const CardItemMenu =({ addItem, quantity,description,itemName,image }: ICardItemMenu) =>{
   const classes = useStyles();
   return (
     <Card style={{width:"100%"}}>
@@ -58,7 +58,7 @@ const CardItemMenu =({ addItem, cant,description,itemName,image }: ICardItemMenu
         </Typography>
       </CardContent>
       <CardActions disableSpacing style={{justifyContent: "flex-end"}}>
-        <strong  style={{marginRight: "8px"}}> {cant}</strong>
+        <strong  style={{marginRight: "8px"}}> {quantity}</strong>
         <Tooltip title="Agregar plato" aria-label="Add">
         <Fab size="small" color="primary" onClick={()=>addItem(1)} aria-label="add">
           <AddIcon /> 

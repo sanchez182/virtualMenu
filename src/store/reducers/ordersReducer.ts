@@ -6,6 +6,7 @@ const InitialState: IOrder = {
   tableNumber: -1,
   extraInfo: "",
   clientId: "",
+  trackingCode:"",
   itemsOrder: {
     itemsFood: [],
     itemsDrink: [],

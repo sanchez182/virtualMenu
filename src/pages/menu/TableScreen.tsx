@@ -1,35 +1,35 @@
 import { Card, CardActionArea, CardContent, Grid, Typography } from '@material-ui/core';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CropDinIcon from '@material-ui/icons/CropDin';
 import { RootState } from '../../store';
 import Tables, { ITable } from '../../components/Tables';
 import StartAppBarPublic from '../../components/Layout/StartAppBarPublic';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import {  withRouter } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'; 
-import { useState } from 'react';
 import { getDataTables } from '../../actionsApi/tableActions';
+import { setTableList } from '../../store/actions/tableSeleted';
+import { ITableModel } from '../../store/actions/actionsInterfaces/ITableActions';
 
-interface TablesScreen extends RouteComponentProps<any> {
-    setSelectedTable: (arg0: ITable) => void;
-}
-
-const TableScreen = ({ setSelectedTable }: TablesScreen) => {
+const TableScreen = () => {
     //tableList 
     const { t } = useTranslation();
-    const [tableList, setTableList] = useState<ITable[]>([])
+     const { tableList }: ITableModel = useSelector((state: RootState) => state.dataTables);
+    const dispatch = useDispatch()
 
     useEffect(() => {  
         async function fetchData() {
             getDataTables().then((tables:ITable[]) => {
                 debugger
-              setTableList(tables)
+                dispatch(setTableList({
+                    selectedTable: {_id : "" , type : "", selected: false, tableNumber : 0},
+                    tableList: tables
+                }))
             })
           }
           fetchData();
-
-      }, []);
+      }, [dispatch]);
 
     const { language } = useSelector((state: RootState) => state.lang);
 
@@ -69,9 +69,7 @@ const TableScreen = ({ setSelectedTable }: TablesScreen) => {
     
                 {
                     tableList.length > 0 && tableList.map((table: ITable) => {
-                        return <Tables table = {table} key={table.tableNumber}
-                            setSelectedTable={setSelectedTable}
-                           />
+                        return <Tables table = {table} key={table.tableNumber}/>
                     })
                 }
         </Grid>
