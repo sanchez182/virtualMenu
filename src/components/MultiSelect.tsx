@@ -3,20 +3,19 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 interface ISelectItem {
-    renderItems: any[];
     setItemValue: (arg0: any) => void;
     items: any[];
     itemName: string;
     placeHolder: string;
 }
-export default function MultiSelect({ setItemValue, renderItems, items, itemName, placeHolder }: ISelectItem) {
+export default function MultiSelect({ setItemValue, items, itemName, placeHolder }: ISelectItem) {
     return (
 
         <Autocomplete
         style={{margin:"12px 12px 12px 12px"}}
         multiple  
         id={itemName}
-        options={items} 
+        options={items.filter(x=> x.showInApp === true)} 
         disableCloseOnSelect
         onChange={(event, value) => setItemValue(value)}
         getOptionLabel={(option) => option[itemName]}

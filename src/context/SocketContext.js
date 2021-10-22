@@ -22,7 +22,6 @@ export const SocketProvider = ({ children }) => {
     }, [  _id,conectarSocket ]);
 
   useEffect(() => {
-      debugger
     if ( !_id) {  
             desconectarSocket();
         }
@@ -32,7 +31,6 @@ export const SocketProvider = ({ children }) => {
     
     useEffect(() => {
         socket?.on('create-or-update-table', (table) => {
-            debugger
             dispatch(addOrUpdateTable({
                 selectedTable: "",
                 tableList: table
@@ -43,7 +41,6 @@ export const SocketProvider = ({ children }) => {
     }, [dispatch, socket]) 
 
     useEffect(() => {
-        debugger
         socket?.on('client-id', (data) => {
             dispatch(setSocketClient(data))
             
@@ -66,7 +63,7 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         socket?.on('table', (mensaje) => {
-            console.log("mesa seleccionada" + " " + mensaje)
+            console.log(`mesa seleccionada ${mensaje}`)
                     })
     }, [_id, socket ]);
 

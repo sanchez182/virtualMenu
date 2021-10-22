@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
@@ -10,6 +10,8 @@ import DialogMenu from './DialogMenu';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { IModelDrinks, IModelFood } from '../interfaces/IModelMenuItem';
+import DialogComponent from './DialogComponent';
+import { TextField } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,16 +35,16 @@ const useStyles = makeStyles((theme: Theme) =>
  
 
 const actions = [
-  { icon: <PanToolIcon />, name: 'hand', id:'hand', action: "Mesero" },
   { icon: <SaveIcon />, name: 'orderFood', id:'orderFood', action: "Pedir comida" },
-  { icon: <KitchenIcon />, name: 'foodSeleted', id:'foodSeleted', action: "Items elegidos" },
-
-  
 ];
 
-export default function ButtonDial({tableNumber}:any) {
-  const classes = useStyles();
-  const { items }= useSelector((state: RootState) => state.menuItemReducer);
+export default function ButtonDialClient() {
+  const classes = useStyles(); 
+  const [passwordOrden, setPasswordOrden] = useState("")
+  const [textButton, setTextButton] = useState("Pedir autorización")
+
+  const { items } = useSelector((state: RootState) => state.menuItemReducer);
+
 
   const renderOrderFood = items.food.filter((x:IModelFood)=> x.quantity > 0).length > 0  || 
   items.drink.filter((x:IModelDrinks)=> x.quantity > 0).length > 0  ? true : false
@@ -53,22 +55,32 @@ export default function ButtonDial({tableNumber}:any) {
     setOpen(false);
   };
 
+  const setReducers = () => {
+/*     dispatch(setSocketClientMaster(trackingCode))
+    dispatch(setTableSeleted(tableModel)) */
+}
+
 
   const setOpenMenu=()=>{
     setOpenDialog(!openDialog)
   }
   const actionEvent=(action: any)=>{
-     if(action.name === "foodSeleted"){
       setOpenDialog(true)
-     }
-    setOpen(false);
   }
 
   const handleOpen = () => {
     setOpen(true);
   };
+
+  const printTextButton=(value:string)=>{
+    setPasswordOrden(value)
+    setTextButton(value !== "" ? "Acctualizar orden":  "Pedir autorización")
+ 
+    }
+  
   
   return (
+     renderOrderFood ?
     <>
         <SpeedDial
           ariaLabel="SpeedDial example"
@@ -80,7 +92,6 @@ export default function ButtonDial({tableNumber}:any) {
           direction={"up"}
         >
            {actions.map((action) => (
-             action.name === "orderFood" && renderOrderFood === false ? null : 
             <SpeedDialAction
               key={action.name}
               icon={action.icon}
@@ -91,9 +102,25 @@ export default function ButtonDial({tableNumber}:any) {
             />
           ))} 
         </SpeedDial>
+
         {openDialog &&
-            <DialogMenu tableNumber={tableNumber} setOpenMenu={setOpenMenu} open={openDialog}/>
+              <DialogComponent
+              open={openDialog}
+              setOpenMenu={(open) => setOpenDialog(open)}
+              dialogContentText="Ingrese contraseña para poder pedir"
+              title="Contraseña para orden"
+              children={<TextField
+                  fullWidth
+                  type="text"
+                  value={passwordOrden}
+                  onChange={(e) => {
+                    printTextButton(e.target.value)
+                  }
+                  } />}
+              actionButton={() => setReducers()}
+              textActionButton={textButton}
+          />
         }
-        </>
+        </> : null
   );
 }

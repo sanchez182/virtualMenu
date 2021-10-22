@@ -25,18 +25,25 @@ interface MenuItem {
   item: any;
   itemType: "food" | "drink";
   itemName: string;
+  renderButtons:boolean;
 }
 
-export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
+export const  MenuItems = ({ item,itemType,itemName,renderButtons }: MenuItem)=> {
   const classes = useStyles();
   const quantity = item.quantity ? item.quantity : 0
   const dispatch = useDispatch();
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
+
+
+
   const addPlate = (cant: number) => {
     const newValue = cant + quantity;
     let indexPlate = items[itemType].findIndex((x: any) => x._id === item._id )
     items[itemType][indexPlate].quantity = newValue;
-    newValue >= 0 && dispatch(setMenuItems(items));
+    
+    if(newValue >= 0){
+      dispatch(setMenuItems(items));
+    } 
   }
 
   const color = item.quantity > 0 ? { backgroundColor: "lightgreen", marginTop: "4px" } : { marginTop: "4px" }
@@ -65,7 +72,7 @@ export const  MenuItems = ({ item,itemType,itemName }: MenuItem)=> {
         </AccordionSummary>
 
         <AccordionDetails style={{    display: "block"}}>
-          <CardItemMenu addItem={addPlate} quantity={quantity} image={item.urlImage}
+          <CardItemMenu renderButtons={renderButtons} addItem={addPlate} quantity={quantity} image={item.urlImage}
            itemName={item[itemName]} description={item.description} />
         </AccordionDetails>
       </Accordion>

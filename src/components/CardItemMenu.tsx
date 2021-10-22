@@ -38,9 +38,10 @@ interface ICardItemMenu {
   description: string;
   itemName: string;
   image: string;
+  renderButtons:boolean;
 }
 
-const CardItemMenu =({ addItem, quantity,description,itemName,image }: ICardItemMenu) =>{
+const CardItemMenu =({ addItem, quantity,description,itemName,image, renderButtons }: ICardItemMenu) =>{
   const classes = useStyles();
   return (
     <Card style={{width:"100%"}}>
@@ -57,7 +58,8 @@ const CardItemMenu =({ addItem, quantity,description,itemName,image }: ICardItem
           {description}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing style={{justifyContent: "flex-end"}}>
+      {renderButtons &&
+          <CardActions disableSpacing style={{justifyContent: "flex-end"}}>
         <strong  style={{marginRight: "8px"}}> {quantity}</strong>
         <Tooltip title="Agregar plato" aria-label="Add">
         <Fab size="small" color="primary" onClick={()=>addItem(1)} aria-label="add">
@@ -70,6 +72,8 @@ const CardItemMenu =({ addItem, quantity,description,itemName,image }: ICardItem
         </Fab> 
         </Tooltip>
       </CardActions>
+      }
+  
     </Card>
   );
 }

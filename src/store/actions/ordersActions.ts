@@ -1,4 +1,4 @@
-import { IOrder, IOrderAction,SET_ORDER_STATE,UPDATE_ORDER_CLIENTID,UPDATE_ORDER_STATUS} from './actionsInterfaces/IOrdersActions';
+import { IOrder, IOrderAction,SET_ORDER_STATE,UPDATE_ID_ORDER,UPDATE_ORDER_CLIENTID,UPDATE_ORDER_STATUS} from './actionsInterfaces/IOrdersActions';
  
 
 export const updateOrderStatus = (payload: any):
@@ -16,6 +16,16 @@ IOrderAction => {
     payload 
   }
 } 
+
+export const updateIdOrder= (payload: any):
+IOrderAction => {
+  return {
+    type: UPDATE_ID_ORDER,
+    payload 
+  }
+} 
+
+
 
 export const setOrder = (payload: IOrder):
 IOrderAction => {

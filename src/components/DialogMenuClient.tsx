@@ -92,11 +92,9 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
   }, [])
 
   const ordenFood = () => {
-
     const itemsFood: any[] = []
     renderFood.forEach(item => {
       itemsFood.push({
-        authorized: true,
         plate: item._id,
         quantity: item.quantity
       })
@@ -105,7 +103,6 @@ const DialogMenu = ({ open, setOpenMenu, tableNumber }: IDialogMenu) => {
     const itemsDrink: any[] = []
     renderDrink.forEach(item => {
       itemsDrink.push({
-        authorized: true,
         drink: item._id,
         quantity: item.quantity
       })

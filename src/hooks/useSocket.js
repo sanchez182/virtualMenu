@@ -24,7 +24,6 @@ export const useSocket = ( serverPath ) => {
     },[ serverPath,_id ]);
 
     const desconectarSocket = useCallback( () => {
-        debugger
         socket?.disconnect();
     },[ socket ]);
 
@@ -35,7 +34,6 @@ export const useSocket = ( serverPath ) => {
 
     useEffect(() => {
         socket?.on('connect', (data) => {
-            debugger
             setOnline( true )});
     }, [ socket ])
 

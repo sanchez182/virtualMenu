@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,7 +9,6 @@ import LocalDiningIcon from '@material-ui/icons/LocalDining';
 import FastfoodIcon from '@material-ui/icons/Fastfood';
 import LocalBarIcon from '@material-ui/icons/LocalBar';
 import MenuItems from './MenuItems';
-import ButtonDial from '../../components/ButtonDial';
 import { useDispatch, useSelector } from 'react-redux';
 import { IDrinkType, IFoodType, IModelDrinks, IModelFood, ITimeFood } from '../../interfaces/IModelMenuItem';
 import { Grid } from '@material-ui/core';
@@ -20,12 +19,6 @@ import { setMenuItems } from '../../store/actions/menuItemsActions';
 import { getAllPlates } from '../../actionsApi/plateActions';
 import { useTranslation } from 'react-i18next';
 import ChangeLenguage from '../../components/ChangeLenguage';
-import { ITable } from '../../components/Tables';
-import DialogComponent from '../../components/DialogComponent';
-import { getAndUpdateOrderBySocketClientId } from '../../actionsApi/orderActions';
-import { IOrder } from '../../store/actions/actionsInterfaces/IOrdersActions';
-import { SocketContext } from '../../context/SocketContext';
-import { setOrder } from '../../store/actions/ordersActions';
 
 //#region  styles
 interface TabPanelProps {
@@ -66,20 +59,14 @@ function a11yProps(index: any) {
 //#endregion
 
 
-interface IMenuProps {
-  selectedTable: ITable
-}
 
-export default function MenuComponent({ selectedTable }: IMenuProps) {
+export default function OnlyMenuComponent() {
   const { t } = useTranslation()
   //TODO: por param llega el numero de mesa
   const { items } = useSelector((state: RootState) => state.menuItemReducer);
   const { foodTimeList, _id, foodTypeList, drinkTypeList } = useSelector((state: RootState) => state.restaurantData);
-  const { socketClientId, socketIdMaster } = useSelector((state: RootState) => state.socketClient);
   const [value, setValue] = React.useState(0);
-  const [openDialog, setOpenDialog] = useState(true)
 
-  const { socket } = useContext(SocketContext);
   const [drinkType, setDrinkType] = React.useState<IDrinkType[]>([]);
   const [foodType, setFoodType] = React.useState<IFoodType[]>([]);
   const [foodTime, setFoodTime] = React.useState<ITimeFood[]>([]);
@@ -91,39 +78,13 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         const [drinks, plates] = values
         items.drink = drinks
         items.food = plates
-        debugger
-        if(localStorage.getItem("oldSocketClientId")=== socketIdMaster){
-          //traiga la data y  
-          getAndUpdateOrderBySocketClientId(localStorage.getItem("oldSocketClientId"), socketClientId).then((order:IOrder)=>{
-            debugger
-              order.itemsOrder.itemsFood.length > 0 && order.itemsOrder.itemsFood.forEach((food:any)=>{
-                  const index = items.food.findIndex((x: any) => x._id === food.plate._id )
-                  items.food[index].quantity = food.quantity
-              })
-              order.itemsOrder.itemsDrink.length > 0 && order.itemsOrder.itemsFood.forEach((element:any)=>{
-                  const index = items.drink.findIndex((x: any) => x._id === element.drink._id )
-                  items.drink[index].quantity = element.quantity
-              })
-              socket?.emit('change-client-id-order', {
-                order: {_id: order._id,clientId: socketClientId}, 
-                uidClient: _id,
-            });
-              dispatch(setMenuItems(items));
-              dispatch(setOrder(order));
-              
-              //actualice el idsocket de la orden 
-          })
-
-      }else{
-            
         dispatch(setMenuItems(items));
-      }
 
       }).catch(error => {
       });
     }
     fetchData();
-  }, [dispatch, items, socketClientId, socketIdMaster])
+  }, [dispatch, items ])
 
   const setDrink = (value: any) => {
     setDrinkType(value as IDrinkType[])
@@ -171,7 +132,7 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       });
 
       return newFoodList2.length > 0 ? newFoodList2.map((item: IModelFood) => {
-        return <MenuItems renderButtons={true} item={item} itemType="food" itemName={item.plateName} key={item._id} />
+        return <MenuItems renderButtons={false} item={item} itemType="food" itemName={item.plateName} key={item._id} />
       }) : withoutData()
 
     } else
@@ -179,7 +140,7 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         let data: JSX.Element[] = [];
         foodTime.forEach((foodTime) => {
           items.food.filter((x: IModelFood) => x.foodTime === foodTime.foodTimeName).forEach((item: IModelFood) => {
-            data.push(<MenuItems renderButtons={true} item={item} itemType="food" itemName={item.plateName} key={item._id} />)
+            data.push(<MenuItems renderButtons={false} item={item} itemType="food" itemName={item.plateName} key={item._id} />)
           })
         })
         return renderItems(data)
@@ -188,13 +149,13 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
           let data: JSX.Element[] = [];
           foodType.forEach((foodType) => {
             items.food.filter((x: IModelFood) => x.foodType === foodType.foodTypeName).forEach((item: IModelFood) => {
-              data.push(<MenuItems renderButtons={true} item={item} itemType="food" itemName={item.plateName} key={item._id} />)
+              data.push(<MenuItems renderButtons={false} item={item} itemType="food" itemName={item.plateName} key={item._id} />)
             })
           })
           return renderItems(data)
         } else {
           return items.food.map((item: IModelFood) => {
-            return <MenuItems renderButtons={true} item={item} itemType="food" itemName={item.plateName} key={item._id} />
+            return <MenuItems renderButtons={false} item={item} itemType="food" itemName={item.plateName} key={item._id} />
           })
         }
   }
@@ -204,13 +165,13 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       let data: JSX.Element[] = [];
       drinkType.forEach((drinkType) => {
         items.drink.filter((x: IModelDrinks) => x.drinkType === drinkType.drinkTypeName).forEach((item: IModelDrinks) => {
-          data.push(<MenuItems renderButtons={true} item={item} itemType="drink" itemName={item.drinkName} key={item._id} />)
+          data.push(<MenuItems renderButtons={false} item={item} itemType="drink" itemName={item.drinkName} key={item._id} />)
         })
       })
       return renderItems(data)
     } else {
       return items.drink.map((item: IModelDrinks) => {
-        return <MenuItems renderButtons={true} item={item} itemType="drink" itemName={item.drinkName} key={item._id} />
+        return <MenuItems renderButtons={false} item={item} itemType="drink" itemName={item.drinkName} key={item._id} />
       })
     }
   }
@@ -228,7 +189,6 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
           <Tab label={t("dishes")} icon={<LocalDiningIcon />} {...a11yProps(0)} />
           <Tab label={t("drinks")} icon={<LocalBarIcon />} {...a11yProps(1)} />
           <Tab label="Ofertas/Combos" icon={<FastfoodIcon />} {...a11yProps(2)} />
-          <Tab label={`${t("table")} #${selectedTable.tableNumber}`} disabled style={{ color: "yellow", fontSize: "20px" }} />
 
         </Tabs>
       </AppBar>
@@ -236,9 +196,9 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
         <Grid container style={{ marginTop: "48px" }}>
           <Grid item xs={12} md={12} >
 
-            <ChangeLenguage showIdClient={true}/>
+            <ChangeLenguage showIdClient={false}/>
             <Card style={{ marginTop: "48px" }}>
-              <MultiSelect
+              <MultiSelect 
                 items={foodTimeList}
                 setItemValue={setTimeFood}
                 itemName="foodTimeName"
@@ -273,21 +233,6 @@ export default function MenuComponent({ selectedTable }: IMenuProps) {
       <TabPanel value={value} index={2} className="tapPanelFullWidth">
         Item Three
       </TabPanel>
-      {selectedTable &&
-        <>
-          <ButtonDial tableNumber={selectedTable.tableNumber} />
-          
-          <DialogComponent
-            open={openDialog}
-            setOpenMenu={(open) => setOpenDialog(open)}
-            dialogContentText= {`Guarde el siguiente código, servirá para revisar el estado de su orden por si el navegador pierde la información`}
-            title="Código de seguimiento de orden"
-            children={<h3>{socketIdMaster ? socketIdMaster : socketClientId}</h3>}
-            actionButton={()=>setOpenDialog(false)}
-            textActionButton="Aceptar"
-          />
-        </> 
-      }
 
 
     </>

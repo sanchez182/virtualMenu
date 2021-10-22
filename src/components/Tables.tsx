@@ -2,12 +2,9 @@ import { Card, CardActionArea, CardContent, Grid, TextField } from '@material-ui
 import DeckIcon from '@material-ui/icons/Deck';
 import { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAndUpdateOrderBySocketClientId } from '../actionsApi/orderActions';
 import { SocketContext } from '../context/SocketContext';
 import { RootState } from '../store';
-import { IOrder } from '../store/actions/actionsInterfaces/IOrdersActions';
 import { ITableModel } from '../store/actions/actionsInterfaces/ITableActions';
-import { setMenuItems } from '../store/actions/menuItemsActions';
 import { setSocketClientMaster } from '../store/actions/socketClientAction';
 import { setTableSeleted } from '../store/actions/tableSeleted';
 import DialogComponent from './DialogComponent';
@@ -51,6 +48,7 @@ const Tables = ({ table }: TablesType) => {
     }
 
     const setReducers = () => {
+        debugger
         dispatch(setSocketClientMaster(trackingCode))
         dispatch(setTableSeleted(tableModel))
     }
@@ -60,7 +58,7 @@ const Tables = ({ table }: TablesType) => {
                 <CardActionArea>
                     <CardContent
                         id={table._id}
-                        onClick={(e) => setIdMasterTogetData(table)}
+                        onClick={(e) =>setIdMasterTogetData(table)}
                         style={{
                             display: 'flex',
                             alignItems: 'center',

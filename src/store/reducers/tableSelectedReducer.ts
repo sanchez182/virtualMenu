@@ -3,7 +3,6 @@ import { ADD_OR_UPDATE_TABLE, ITableActions, ITableModel,SET_TABLE_LIST, SET_SEL
 
 const addOrUpdate=(oldState:ITableModel,data:ITable)=>{
   const newOrder = {...oldState}
-  debugger
   const {_id,selected,type,tableNumber, } = data
   const exists = newOrder.tableList.find((x:ITable)=> x._id === data._id)
   const index = newOrder.tableList.findIndex((x:ITable)=> x._id === data._id)
@@ -34,7 +33,6 @@ const tablesDataReducer = (state: ITableModel = InitialState, action: ITableActi
       return addOrUpdate(state,action.payload.tableList[0])
     
      case SET_TABLE_LIST:
-       debugger
         return {...state, tableList: action.payload.tableList }
       
 

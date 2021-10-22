@@ -3,6 +3,8 @@ export const SET_ORDER_STATE = 'SET_ORDER_STATE';
 export const UPDATE_ORDER_STATUS = 'UPDATE_ORDER_STATUS'; 
 export const UPDATE_ORDER_CLIENTID = 'UPDATE_ORDER_CLIENTID'; 
 export const UPDATE_ORDER = 'UPDATE_ORDER'; 
+export const UPDATE_ID_ORDER = 'UPDATE_ID_ORDER'; 
+
 
 
 export interface IOrder {
